@@ -305,16 +305,6 @@ export default function LaLiga() {
     { num: "04", title: "Ejecución + Testing", desc: "Implementamos, testeamos y optimizamos con datos reales del mercado." },
     { num: "05", title: "Reportes Claros", desc: "Cada semana: progreso hacia el KPI. Sin números que no importan." }
   ];
-const clients = [
-  { name: "Zoomin Groomin", logo: "/imagenes/zoomin.png" },
-  { name: "Gluten Free Shop", logo: "/imagenes/gluten-free.png" },
-  { name: "Farmaquiero", logo: "/imagenes/farmaquiero.png" },
-  { name: "Tienda Vanesa", logo: "/imagenes/vanesa.png" },
-  { name: "Kuda Rose", logo: "/imagenes/kuda-rose.png" },
-  { name: "Colibri Chic", logo: "/imagenes/colibri.jpg" },
-  { name: "Welter IMW", logo: "/imagenes/welter.png" },
-  { name: "Librería Patán", logo: "/imagenes/libreria.jpg" }
-];
 
   const team = [
     {
@@ -466,29 +456,6 @@ const clients = [
 
       {/* ── GRID CASOS ── */}
       {/* ── NUESTROS CLIENTES ── */}
-<section style={{ padding: "100px 24px", borderTop: "1px solid rgba(109,40,217,0.12)" }}>
-  <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-    <ScrollReveal>
-      <div style={{ textAlign: "center", marginBottom: 56 }}>
-        <h2 style={{ fontSize: "clamp(32px,5vw,60px)", fontWeight: 900 }}>
-          <span style={{ color: "#cbd5e1" }}>Empresas que </span><span style={gText}>CONFÍAN EN NOSOTROS</span>
-        </h2>
-        <p style={{ color: "#475569", marginTop: 10 }}>8 negocios transformados en diferentes industrias</p>
-      </div>
-    </ScrollReveal>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 24 }}>
-      {clients.map((c, i) => (
-        <ScrollReveal key={i} direction="up" delay={i * 50}>
-          <div style={{ ...card({ padding: 20, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 120, cursor: "pointer", transition: "all 0.3s" }) }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(168,85,247,0.5)"; e.currentTarget.style.transform = "translateY(-6px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(139,92,246,0.2)"; e.currentTarget.style.transform = "none"; }}>
-            <img src={c.logo} alt={c.name} style={{ maxWidth: "100%", maxHeight: "80px", objectFit: "contain" }} />
-          </div>
-        </ScrollReveal>
-      ))}
-    </div>
-  </div>
-</section>
       <section style={{ padding: "80px 24px", borderTop: "1px solid rgba(109,40,217,0.12)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <ScrollReveal>
