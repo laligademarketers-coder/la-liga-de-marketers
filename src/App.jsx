@@ -165,6 +165,15 @@ function LeadModal({ onClose }) {
   const handle = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const submit = async () => {
     if (!form.nombre || !form.email) return;
+    
+    // Track Meta Pixel Lead
+    if (window.fbq) {
+      fbq('track', 'Lead', {
+        value: 0,
+        currency: 'ARS'
+      });
+    }
+
     // 1. Guardar en Google Sheets
     try {
       await fetch(SHEETS_WEBHOOK, {
