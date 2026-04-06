@@ -173,6 +173,9 @@ function LeadModal({ onClose }) {
         currency: 'ARS'
       });
     }
+    
+    // Pequeño delay para que Meta registre el evento
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     // 1. Guardar en Google Sheets
     try {
