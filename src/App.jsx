@@ -168,13 +168,21 @@ function LeadModal({ onClose }) {
     
     // Track Meta Pixel Lead
     if (window.fbq) {
-      window.fbq('track', 'Lead', {
+      window.fbq('track', 'Contact', {
         value: 0,
         currency: 'ARS'
       });
     }
     
-    // Pequeño delay para que Meta registre el evento
+    // Track Google Analytics Lead Event
+    if (window.gtag) {
+      window.gtag('event', 'generate_lead', {
+        currency: 'ARS',
+        value: 0
+      });
+    }
+    
+    // Pequeño delay para que registren los eventos
     await new Promise(resolve => setTimeout(resolve, 500));
 
     // 1. Guardar en Google Sheets
