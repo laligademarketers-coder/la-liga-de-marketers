@@ -320,7 +320,7 @@ export default function LaLiga() {
       name: "Mariel Calvet", role: "Marketing Strategist & Digital Growth",
       tags: ["Meta Ads", "Google Ads", "Branding", "Contenido"],
       bio: "Especialista en marketing digital con foco en resultados tangibles. Lidera el área de Marketing en FOTOPOINT y acompaña PyMEs a escalar su presencia digital: desde identidad de marca y contenido social hasta campañas de performance y expansión omnicanal.",
-      photo: "/images/mariel.jpg",
+      photo: "/imagenes/mariel.jpg",
       grad: "linear-gradient(135deg,#ec4899,#7c3aed)",
       linkedin: "https://www.linkedin.com/in/mariel-calvet-334532260/",
       stats: [{ v: "Meta", l: "& Google Ads" }, { v: "PyMEs", l: "Especialista" }, { v: "Omni", l: "Canal" }]
