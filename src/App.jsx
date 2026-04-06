@@ -311,7 +311,7 @@ export default function LaLiga() {
       name: "Lucas Cabrera", role: "eCommerce & Growth Strategy",
       tags: ["VTEX", "Meta & Google Ads", "Data & BI", "Automatización"],
       bio: "Project Manager eCommerce con foco en crecimiento, rentabilidad y escalabilidad. Lideró el canal B2C de Farmaquiero con facturación de $50M ARS/mes, triplicando la conversión (0,4% → 1,2%) y aumentando el ticket promedio un 66%. Especialista en VTEX, n8n y Power BI.",
-      photo: "https://i.imgur.com/xryaJw6.jpg",
+      photo: "/imagenes/Lucas.jpg.png",
       grad: "linear-gradient(135deg,#3b82f6,#7c3aed)",
       linkedin: "https://www.linkedin.com/in/lucas-ignacio-cabrera-03bb67140/",
       stats: [{ v: "3x", l: "Conversión" }, { v: "+66%", l: "Ticket" }, { v: "$50M", l: "ARS/mes" }]
@@ -340,8 +340,8 @@ export default function LaLiga() {
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, backdropFilter: "blur(20px)", background: scrolled ? "rgba(5,5,8,0.95)" : "transparent", borderBottom: scrolled ? "1px solid rgba(139,92,246,0.2)" : "1px solid transparent", transition: "all 0.4s" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 42, height: 42, borderRadius: "50%", background: grad, padding: 2 }}>
-              <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#0a0a14", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 900, ...gText }}>∞</div>
+            <div style={{ width: 42, height: 42, borderRadius: "50%", padding: 2 }}>
+              <img src="/imagenes/isologo.jpg.png" alt="La Liga" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
             </div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 2, ...gText }}>LA LIGA</div>
