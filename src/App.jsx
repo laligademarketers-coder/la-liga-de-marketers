@@ -168,7 +168,7 @@ function LeadModal({ onClose }) {
     
     // Track Meta Pixel Lead
     if (window.fbq) {
-      fbq('track', 'Lead', {
+      window.fbq('track', 'Lead', {
         value: 0,
         currency: 'ARS'
       });
