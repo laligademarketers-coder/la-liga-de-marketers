@@ -163,10 +163,10 @@ function LeadModal({ onClose }) {
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
   const [sent, setSent] = useState(false);
   const handle = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  const submit = async () => {
+const submit = async () => {
     if (!form.nombre || !form.email) return;
     
-    // Track Meta Pixel Lead
+    // 1. Track Meta Pixel (Client-Side)
     if (window.fbq) {
       window.fbq('track', 'Contact', {
         value: 0,
@@ -174,7 +174,7 @@ function LeadModal({ onClose }) {
       });
     }
     
-    // Track Google Analytics Lead Event
+    // 2. Track Google Analytics Lead Event
     if (window.gtag) {
       window.gtag('event', 'generate_lead', {
         currency: 'ARS',
@@ -182,10 +182,42 @@ function LeadModal({ onClose }) {
       });
     }
     
+    // 3. Track Meta Conversion API (Server-Side)
+    const trackConversionAPI = async () => {
+      try {
+        const userData = {
+          em: form.email ? btoa(form.email.toLowerCase()).toString() : null,
+          fn: form.nombre ? btoa(form.nombre.toLowerCase().split(' ')[0]).toString() : null,
+          ln: form.nombre ? btoa(form.nombre.toLowerCase().split(' ').pop()).toString() : null
+        };
+        
+        await fetch('https://graph.facebook.com/v18.0/1265283559068729/events?access_token=EAASokIySZBvwBRNqsBZBnVtx44PEMsHWxLwxGZAZC4AgumGnKAsvy4iydKXOdZATMj5D5CbXecLE182bZALTE29qdztuhyAjczSHNwy2p3OxalLsQYzpOgZCzrZCGnJ305Qvib4wD1hwyuAkRRczY3TNFHAdHZAk29NQrKl2srRrE3YLEnPiCln4l8IFYid2jVwZDZD', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: [{
+              event_name: 'Lead',
+              event_time: Math.floor(Date.now() / 1000),
+              user_data: userData,
+              custom_data: {
+                currency: 'ARS',
+                value: 0
+              }
+            }]
+          })
+        });
+      } catch (err) {
+        console.error('Conversion API error:', err);
+      }
+    };
+    
+    // Ejecutar tracking
+    await trackConversionAPI();
+    
     // Pequeño delay para que registren los eventos
     await new Promise(resolve => setTimeout(resolve, 500));
-
-    // 1. Guardar en Google Sheets
+    
+    // 4. Guardar en Google Sheets
     try {
       await fetch(SHEETS_WEBHOOK, {
         method: "POST",
@@ -196,11 +228,12 @@ function LeadModal({ onClose }) {
     } catch (err) {
       console.error("Sheets error:", err);
     }
-    // 2. Abrir WhatsApp con datos pre-cargados
+    
+    // 5. Abrir WhatsApp con datos pre-cargados
     const msg = encodeURIComponent(`Hola La Liga! 👋\n\nSoy *${form.nombre}*\nEmail: ${form.email}\n\n${form.mensaje || "Me interesa una consulta gratuita."}`);
     window.open(`${WA_BASE}?text=${msg}`, "_blank");
     setSent(true);
-  };
+};
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }} onClick={onClose} />
