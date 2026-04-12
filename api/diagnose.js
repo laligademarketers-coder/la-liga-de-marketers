@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
+    const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.error('GOOGLE_GEMINI_API_KEY not set');
       return res.status(500).json({ error: 'API key not configured' });
