@@ -36,63 +36,22 @@ const Diagnostico = () => {
 
   const generateHaikuReport = async (data) => {
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch('/api/diagnose', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20241022',
-          max_tokens: 1000,
-          messages: [{
-            role: 'user',
-            content: `Eres un experto en crecimiento de negocios. Analiza este negocio y genera SOLO 3-5 recomendaciones CLAVE y ACCIONABLES:
+        body: JSON.stringify(data)
+      });
 
-DATOS:
-- Industria: ${data.industry}
-- Etapa: ${data.stage}
-- Ingresos: ${data.revenue}
-- Problema: ${data.problem}
-- Canales: ${data.channels.length > 0 ? data.channels.join(', ') : 'Ninguno'}
-- Presupuesto: ${data.budget}
-- Métrica clave: ${data.metric}
-
-FORMATO RESPUESTA (JSON):
-{
-  "titulo": "Diagnóstico de ${data.industry}",
-  "resumen": "1-2 frases sobre el estado actual",
-  "recomendaciones": [
-    {
-      "titulo": "string corto (máx 8 palabras)",
-      "descripcion": "1-2 líneas explicando POR QUÉ y CÓMO"
-    }
-  ],
-  "proximos_pasos": "Qué hacer en los próximos 7 días",
-  "inversion_estimada": "Rango de inversión recomendada"
-}
-
-Sé específico, directo y accionable. NO uses términos vagos.`
-            }]
-          })
-        });
-
-      const result = await response.json();
-      const text = result.content[0].text;
-      
-      try {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        return JSON.parse(jsonMatch[0]);
-      } catch {
-        return {
-          titulo: 'Diagnóstico de tu negocio',
-          resumen: 'Análisis completado',
-          recomendaciones: [{ titulo: 'Consulta con nuestro equipo', descripcion: text }],
-          proximos_pasos: 'Agendar una consulta para análisis personalizado',
-          inversion_estimada: 'A definir según estrategia'
-        };
+      if (!response.ok) {
+        throw new Error('Failed to generate report');
       }
+
+      const report = await response.json();
+      return report;
     } catch (error) {
-      console.error('Error generating report:', error);
+      console.error('Error:', error);
       return null;
     }
   };
@@ -209,7 +168,8 @@ Sé específico, directo y accionable. NO uses términos vagos.`
       background: 'rgba(30, 41, 59, 0.6)',
       color: '#e2e8f0',
       fontSize: '0.95rem',
-      transition: 'all 0.3s'
+      transition: 'all 0.3s',
+      boxSizing: 'border-box'
     },
     select: {
       width: '100%',
@@ -218,7 +178,8 @@ Sé específico, directo y accionable. NO uses términos vagos.`
       borderRadius: '8px',
       background: 'rgba(30, 41, 59, 0.6)',
       color: '#e2e8f0',
-      fontSize: '0.95rem'
+      fontSize: '0.95rem',
+      boxSizing: 'border-box'
     },
     radioGroup: {
       display: 'flex',
@@ -432,25 +393,62 @@ Sé específico, directo y accionable. NO uses términos vagos.`
           <div style={styles.formGroup}>
             <label style={styles.label}>¿En qué etapa está tu negocio?</label>
             <div style={styles.radioGroup}>
-              {['startup', 'growth', 'established', 'scaling'].map(val => (
-                <div key={val} style={styles.radioItem}>
-                  <input 
-                    type="radio" 
-                    name="stage" 
-                    value={val}
-                    checked={formData.stage === val}
-                    onChange={handleInputChange}
-                    style={styles.radioInput}
-                    required
-                  />
-                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                    {val === 'startup' && 'Startup / Menos de 1 año'}
-                    {val === 'growth' && 'Crecimiento / 1-3 años'}
-                    {val === 'established' && 'Consolidado / 3+ años'}
-                    {val === 'scaling' && 'Escalando / Múltiples líneas de negocio'}
-                  </label>
-                </div>
-              ))}
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="stage" 
+                  value="startup"
+                  checked={formData.stage === 'startup'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Startup / Menos de 1 año
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="stage" 
+                  value="growth"
+                  checked={formData.stage === 'growth'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Crecimiento / 1-3 años
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="stage" 
+                  value="established"
+                  checked={formData.stage === 'established'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Consolidado / 3+ años
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="stage" 
+                  value="scaling"
+                  checked={formData.stage === 'scaling'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Escalando / Múltiples líneas de negocio
+                </label>
+              </div>
             </div>
           </div>
 
@@ -475,55 +473,154 @@ Sé específico, directo y accionable. NO uses términos vagos.`
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Cuál es tu principal problema AHORA?</label>
             <div style={styles.radioGroup}>
-              {[
-                { val: 'leads', label: 'No tengo suficientes leads/clientes potenciales' },
-                { val: 'conversion', label: 'Tengo tráfico pero baja conversión' },
-                { val: 'retention', label: 'Pierdo clientes rápidamente' },
-                { val: 'visibility', label: 'Nadie conoce mi negocio' },
-                { val: 'roi', label: 'No sé si mis gastos en marketing dan resultado' }
-              ].map(item => (
-                <div key={item.val} style={styles.radioItem}>
-                  <input 
-                    type="radio" 
-                    name="problem" 
-                    value={item.val}
-                    checked={formData.problem === item.val}
-                    onChange={handleInputChange}
-                    style={styles.radioInput}
-                    required
-                  />
-                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                    {item.label}
-                  </label>
-                </div>
-              ))}
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="problem" 
+                  value="leads"
+                  checked={formData.problem === 'leads'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  No tengo suficientes leads/clientes potenciales
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="problem" 
+                  value="conversion"
+                  checked={formData.problem === 'conversion'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Tengo tráfico pero baja conversión
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="problem" 
+                  value="retention"
+                  checked={formData.problem === 'retention'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Pierdo clientes rápidamente
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="problem" 
+                  value="visibility"
+                  checked={formData.problem === 'visibility'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Nadie conoce mi negocio
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="problem" 
+                  value="roi"
+                  checked={formData.problem === 'roi'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  No sé si mis gastos en marketing dan resultado
+                </label>
+              </div>
             </div>
           </div>
 
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Qué canales usas actualmente?</label>
             <div style={styles.checkboxGroup}>
-              {[
-                { val: 'organic', label: 'Tráfico orgánico / SEO' },
-                { val: 'paid', label: 'Publicidad pagada (Meta, Google)' },
-                { val: 'social', label: 'Redes sociales' },
-                { val: 'email', label: 'Email marketing' },
-                { val: 'referral', label: 'Referidos / Boca a boca' },
-                { val: 'none', label: 'No tengo estrategia digital' }
-              ].map(item => (
-                <div key={item.val} style={styles.radioItem}>
-                  <input 
-                    type="checkbox" 
-                    value={item.val}
-                    checked={formData.channels.includes(item.val)}
-                    onChange={handleCheckboxChange}
-                    style={styles.radioInput}
-                  />
-                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                    {item.label}
-                  </label>
-                </div>
-              ))}
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="organic"
+                  checked={formData.channels.includes('organic')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Tráfico orgánico / SEO
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="paid"
+                  checked={formData.channels.includes('paid')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Publicidad pagada (Meta, Google)
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="social"
+                  checked={formData.channels.includes('social')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Redes sociales
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="email"
+                  checked={formData.channels.includes('email')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Email marketing
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="referral"
+                  checked={formData.channels.includes('referral')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Referidos / Boca a boca
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="none"
+                  checked={formData.channels.includes('none')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  No tengo estrategia digital
+                </label>
+              </div>
             </div>
           </div>
 
@@ -548,27 +645,62 @@ Sé específico, directo y accionable. NO uses términos vagos.`
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Cuál es tu métrica más importante?</label>
             <div style={styles.radioGroup}>
-              {[
-                { val: 'leads', label: 'Cantidad de leads / clientes nuevos' },
-                { val: 'sales', label: 'Ventas / Ingresos' },
-                { val: 'retention', label: 'Retención / Lifetime value' },
-                { val: 'brand', label: 'Visibilidad / Reconocimiento de marca' }
-              ].map(item => (
-                <div key={item.val} style={styles.radioItem}>
-                  <input 
-                    type="radio" 
-                    name="metric" 
-                    value={item.val}
-                    checked={formData.metric === item.val}
-                    onChange={handleInputChange}
-                    style={styles.radioInput}
-                    required
-                  />
-                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                    {item.label}
-                  </label>
-                </div>
-              ))}
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="metric" 
+                  value="leads"
+                  checked={formData.metric === 'leads'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Cantidad de leads / clientes nuevos
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="metric" 
+                  value="sales"
+                  checked={formData.metric === 'sales'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Ventas / Ingresos
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="metric" 
+                  value="retention"
+                  checked={formData.metric === 'retention'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Retención / Lifetime value
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="metric" 
+                  value="brand"
+                  checked={formData.metric === 'brand'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Visibilidad / Reconocimiento de marca
+                </label>
+              </div>
             </div>
           </div>
 
