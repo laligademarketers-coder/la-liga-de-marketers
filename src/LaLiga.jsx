@@ -415,16 +415,22 @@ export default function LaLiga() {
           </ScrollReveal>
           <ScrollReveal delay={300}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center", marginBottom: 64 }}>
-              <StarBorder size="md" onClick={() => setShowModal(true)}>
-                📋 Consulta Gratuita <ArrowUpRight size={18} />
-              </StarBorder>
-              <button onClick={() => window.open(GCAL_URL, "_blank")}
-                style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(139,92,246,0.4)", background: "rgba(109,40,217,0.1)", color: "#c4b5fd", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(168,85,247,0.7)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.4)"}>
-                <Calendar size={18} /> Agendar Reunión
-              </button>
-            </div>
+  <StarBorder size="md" onClick={() => setShowModal(true)}>
+    📋 Consulta Gratuita <ArrowUpRight size={18} />
+  </StarBorder>
+  <button onClick={() => window.open(GCAL_URL, "_blank")}
+    style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(139,92,246,0.4)", background: "rgba(109,40,217,0.1)", color: "#c4b5fd", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
+    onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(168,85,247,0.7)"}
+    onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.4)"}>
+    <Calendar size={18} /> Agendar Reunión
+  </button>
+  <button onClick={() => window.location.href = "/diagnostico"}
+    style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(34,197,94,0.4)", background: "rgba(34,197,94,0.1)", color: "#86efac", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
+    onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(34,197,94,0.7)"}
+    onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(34,197,94,0.4)"}>
+    🔍 Diagnóstico Gratis
+  </button>
+</div>
           </ScrollReveal>
           {/* Stats */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 16, maxWidth: 680, margin: "0 auto" }}>
