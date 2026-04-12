@@ -464,11 +464,11 @@ Sé específico, directo y accionable. NO uses términos vagos.`
               required
             >
               <option value="">Selecciona un rango</option>
-              <option value="0-5k">Menos de $5.000</option>
-              <option value="5-20k">$5.000 - $20.000</option>
-              <option value="20-50k">$20.000 - $50.000</option>
-              <option value="50-100k">$50.000 - $100.000</option>
-              <option value="100k+">Más de $100.000</option>
+              <option value="0-1m">Menos de $1.000.000</option>
+              <option value="1-5m">$1.000.000 - $5.000.000</option>
+              <option value="5-10m">$5.000.000 - $10.000.000</option>
+              <option value="10-20m">$10.000.000 - $20.000.000</option>
+              <option value="20m+">Más de $20.000.000</option>
             </select>
           </div>
 
@@ -528,7 +528,7 @@ Sé específico, directo y accionable. NO uses términos vagos.`
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>¿Cuánto puedes invertir mensualmente en growth?</label>
+            <label style={styles.label}>¿Cuánto puedes invertir en Marketing de alto nivel?</label>
             <select 
               name="budget" 
               value={formData.budget}
@@ -538,10 +538,10 @@ Sé específico, directo y accionable. NO uses términos vagos.`
             >
               <option value="">Selecciona un rango</option>
               <option value="0">No tengo presupuesto aún</option>
-              <option value="100-300">$100 - $300</option>
-              <option value="300-800">$300 - $800</option>
-              <option value="800-2000">$800 - $2.000</option>
-              <option value="2000+">Más de $2.000</option>
+              <option value="100k-300k">$100.000 - $300.000</option>
+              <option value="300k-500k">$300.000 - $500.000</option>
+              <option value="500k-1m">$500.000 - $1.000.000</option>
+              <option value="1m+">Más de $1.000.000</option>
             </select>
           </div>
 
