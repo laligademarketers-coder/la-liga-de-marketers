@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -21,9 +20,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
     if (!apiKey) {
-      console.error('ANTHROPIC_API_KEY not set');
+      console.error('GOOGLE_GEMINI_API_KEY not set');
       return res.status(500).json({ error: 'API key not configured' });
     }
 
@@ -40,7 +39,7 @@ DATOS:
 - Presupuesto: ${budget}
 - Métrica clave: ${metric}
 
-RESPONDE EN JSON (sin markdown):
+RESPONDE EN JSON (sin markdown, sin backticks):
 {
   "titulo": "Diagnóstico de ${industry}",
   "resumen": "1-2 frases sobre el estado actual",
@@ -54,39 +53,46 @@ RESPONDE EN JSON (sin markdown):
   "inversion_estimada": "Rango de inversión recomendada"
 }
 
-Sé específico, directo y accionable. NO uses términos vagos.`;
+Sé específico, directo y accionable.`;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20241022',
-        max_tokens: 1024,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
-      })
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('Claude API error:', response.status, errorData);
+      console.error('Gemini API error:', response.status, errorData);
       return res.status(500).json({ 
         error: 'Failed to generate report',
-        status: response.status,
-        details: errorData
+        status: response.status
       });
     }
 
     const data = await response.json();
-    const text = data.content[0].text;
+    
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      console.error('Invalid Gemini response:', data);
+      return res.status(500).json({ error: 'Invalid API response' });
+    }
+
+    const text = data.candidates[0].content.parts[0].text;
 
     try {
       const jsonMatch = text.match(/\{[\s\S]*\}/);
