@@ -63,7 +63,7 @@ RESPONDE EN JSON (sin markdown, sin backticks):
 Sé específico, directo y accionable.`;
 
     // Modelo actualizado: gemini-2.0-flash es el sucesor activo de 1.5-flash
-    const GEMINI_MODEL = 'gemini-2.0-flash';
+    const GEMINI_MODEL = 'gemini-2.0-flash-001';
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
     // LOG 3: confirmar URL (sin la key)
