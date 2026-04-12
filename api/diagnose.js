@@ -16,20 +16,18 @@ export default async function handler(req, res) {
   try {
     const { name, email, industry, stage, revenue, problem, channels, budget, metric } = req.body;
 
-    // LOG 1: confirmar que el body llega
     console.log('[diagnose] Body recibido:', { name, email, industry, stage });
 
     if (!name || !email || !industry) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const apiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
 
-    // LOG 2: confirmar que la key existe (nunca loggear la key completa)
     console.log('[diagnose] API key presente:', !!apiKey, '| Longitud:', apiKey?.length ?? 0);
 
     if (!apiKey) {
-      console.error('[diagnose] ERROR: API key no configurada en variables de entorno');
+      console.error('[diagnose] ERROR: ANTHROPIC_API_KEY no configurada');
       return res.status(500).json({ error: 'API key not configured' });
     }
 
@@ -46,7 +44,7 @@ DATOS:
 - Presupuesto: ${budget}
 - Métrica clave: ${metric}
 
-RESPONDE EN JSON (sin markdown, sin backticks):
+RESPONDE ÚNICAMENTE EN JSON VÁLIDO (sin markdown, sin backticks, sin texto antes o después):
 {
   "titulo": "Diagnóstico de ${industry}",
   "resumen": "1-2 frases sobre el estado actual",
@@ -58,65 +56,51 @@ RESPONDE EN JSON (sin markdown, sin backticks):
   ],
   "proximos_pasos": "Qué hacer en los próximos 7 días",
   "inversion_estimada": "Rango de inversión recomendada"
-}
+}`;
 
-Sé específico, directo y accionable.`;
+    console.log('[diagnose] Llamando a Claude Haiku...');
 
-    // Modelo actualizado: gemini-2.0-flash es el sucesor activo de 1.5-flash
-    const GEMINI_MODEL = 'gemini-2.0-flash-001';
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-
-    // LOG 3: confirmar URL (sin la key)
-    console.log('[diagnose] Llamando a Gemini model:', GEMINI_MODEL);
-
-    const geminiBody = {
-      contents: [
-        {
-          parts: [{ text: prompt }]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1024,
-      }
-    };
-
-    const response = await fetch(geminiUrl, {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiBody)
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 1024,
+        messages: [
+          { role: 'user', content: prompt }
+        ]
+      })
     });
 
-    // LOG 4: status de Gemini
-    console.log('[diagnose] Gemini HTTP status:', response.status);
+    console.log('[diagnose] Claude HTTP status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('[diagnose] Gemini error body:', errorText);
+      console.error('[diagnose] Claude error body:', errorText);
       return res.status(500).json({
-        error: 'Gemini API error',
-        geminiStatus: response.status,
-        // Devolvemos el mensaje de Gemini para facilitar el debug
+        error: 'Claude API error',
+        claudeStatus: response.status,
         detail: errorText.substring(0, 300)
       });
     }
 
     const data = await response.json();
 
-    // LOG 5: estructura de la respuesta
-    console.log('[diagnose] Gemini response keys:', Object.keys(data));
+    console.log('[diagnose] Claude response - stop_reason:', data.stop_reason);
 
-    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      console.error('[diagnose] Estructura de respuesta inesperada:', JSON.stringify(data).substring(0, 500));
-      return res.status(500).json({ error: 'Unexpected Gemini response structure' });
+    if (!data.content?.[0]?.text) {
+      console.error('[diagnose] Estructura inesperada:', JSON.stringify(data).substring(0, 500));
+      return res.status(500).json({ error: 'Unexpected Claude response structure' });
     }
 
-    const text = data.candidates[0].content.parts[0].text;
+    const text = data.content[0].text;
 
-    // LOG 6: texto crudo antes del parse
-    console.log('[diagnose] Texto crudo de Gemini (primeros 300 chars):', text.substring(0, 300));
+    console.log('[diagnose] Texto crudo (primeros 300 chars):', text.substring(0, 300));
 
-    // Limpieza robusta: eliminar bloques markdown si Gemini los incluye igual
     const cleaned = text
       .replace(/```json\s*/gi, '')
       .replace(/```\s*/gi, '')
@@ -125,11 +109,10 @@ Sé específico, directo y accionable.`;
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
-      console.error('[diagnose] No se encontró JSON en la respuesta:', cleaned.substring(0, 300));
-      // Fallback graceful en lugar de 500
+      console.error('[diagnose] No se encontró JSON:', cleaned.substring(0, 300));
       return res.status(200).json({
         titulo: `Diagnóstico de ${industry}`,
-        resumen: 'Análisis completado. Revisá los detalles abajo.',
+        resumen: 'Análisis completado.',
         recomendaciones: [{ titulo: 'Análisis realizado', descripcion: text.substring(0, 300) }],
         proximos_pasos: 'Agendá una consulta para análisis personalizado.',
         inversion_estimada: 'A definir según estrategia'
@@ -141,7 +124,7 @@ Sé específico, directo y accionable.`;
       console.log('[diagnose] Reporte parseado OK. Título:', report.titulo);
       return res.status(200).json(report);
     } catch (parseError) {
-      console.error('[diagnose] Parse error:', parseError.message, '| JSON candidato:', jsonMatch[0].substring(0, 200));
+      console.error('[diagnose] Parse error:', parseError.message);
       return res.status(200).json({
         titulo: `Diagnóstico de ${industry}`,
         resumen: 'Análisis completado.',
