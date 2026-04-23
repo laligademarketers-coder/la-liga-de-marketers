@@ -6,6 +6,7 @@ const Diagnostico = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     industry: '',
     stage: '',
     revenue: '',
@@ -41,7 +42,18 @@ const Diagnostico = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          industry: data.industry,
+          stage: data.stage,
+          revenue: data.revenue,
+          problem: data.problem,
+          channels: data.channels,
+          budget: data.budget,
+          metric: data.metric
+        })
       });
 
       if (!response.ok) {
@@ -70,6 +82,7 @@ const Diagnostico = () => {
           body: JSON.stringify({
             name: data.name,
             email: data.email,
+            phone: data.phone,
             industry: data.industry,
             stage: data.stage,
             revenue: data.revenue,
@@ -231,21 +244,122 @@ const Diagnostico = () => {
       marginBottom: '1rem',
       color: '#fff'
     },
-    recommendation: {
+    reportH3: {
+      fontSize: '1.2rem',
+      fontWeight: 700,
+      marginBottom: '1rem',
+      color: '#a855f7'
+    },
+    scoreCard: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+      gap: '1rem',
+      marginBottom: '2rem'
+    },
+    scoreItem: {
       background: 'rgba(168, 85, 247, 0.1)',
+      padding: '1rem',
+      borderRadius: '8px',
+      textAlign: 'center'
+    },
+    scoreLabel: {
+      fontSize: '12px',
+      color: '#cbd5e1',
+      margin: '0 0 0.5rem',
+      textTransform: 'capitalize'
+    },
+    scoreValue: {
+      fontSize: '28px',
+      fontWeight: '700',
+      color: '#e2e8f0',
+      margin: 0
+    },
+    problemBox: {
+      background: 'rgba(236, 72, 153, 0.15)',
       padding: '1.25rem',
       borderRadius: '8px',
-      marginBottom: '1rem',
-      borderLeft: '3px solid #a855f7'
+      borderLeft: '3px solid #ec4899',
+      marginBottom: '2rem'
     },
-    recommendationTitle: {
-      fontWeight: 700,
-      marginBottom: '0.5rem',
-      color: '#e2e8f0'
+    problemTitle: {
+      fontSize: '14px',
+      fontWeight: '700',
+      color: '#e2e8f0',
+      margin: '0 0 0.5rem'
     },
-    recommendationDesc: {
+    problemText: {
       color: '#cbd5e1',
-      fontSize: '0.95rem',
+      fontSize: '14px',
+      margin: 0,
+      lineHeight: '1.6'
+    },
+    mesBlock: {
+      marginBottom: '2rem',
+      paddingBottom: '2rem',
+      borderBottom: '1px solid rgba(168, 85, 247, 0.1)'
+    },
+    mesTitulo: {
+      fontSize: '16px',
+      fontWeight: '700',
+      color: '#a855f7',
+      marginBottom: '1rem'
+    },
+    pilarSection: {
+      marginBottom: '1.5rem'
+    },
+    pilarTitulo: {
+      fontSize: '13px',
+      fontWeight: '600',
+      color: '#e2e8f0',
+      marginBottom: '0.5rem',
+      textTransform: 'uppercase'
+    },
+    pilarLista: {
+      margin: 0,
+      paddingLeft: '1.25rem',
+      color: '#cbd5e1',
+      fontSize: '14px',
+      lineHeight: '1.8'
+    },
+    metricaBox: {
+      background: 'rgba(168, 85, 247, 0.08)',
+      padding: '1rem',
+      borderRadius: '8px'
+    },
+    metricaPeriodo: {
+      fontSize: '12px',
+      color: '#a855f7',
+      fontWeight: '600',
+      margin: '0 0 0.5rem',
+      textTransform: 'capitalize'
+    },
+    metricaTexto: {
+      color: '#cbd5e1',
+      fontSize: '14px',
+      margin: 0
+    },
+    inversionBox: {
+      background: 'rgba(168, 85, 247, 0.08)',
+      padding: '1rem',
+      borderRadius: '8px'
+    },
+    proximosBox: {
+      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+      padding: '1.5rem',
+      borderRadius: '8px',
+      marginBottom: '2rem',
+      borderLeft: '3px solid #22c55e'
+    },
+    proximosTitle: {
+      fontSize: '14px',
+      fontWeight: '700',
+      color: '#86efac',
+      margin: '0 0 0.75rem'
+    },
+    proximosText: {
+      color: '#cbd5e1',
+      fontSize: '14px',
+      margin: 0,
       lineHeight: '1.6'
     },
     ctaBox: {
@@ -255,6 +369,22 @@ const Diagnostico = () => {
       borderRadius: '12px',
       textAlign: 'center',
       marginTop: '2rem'
+    },
+    ctaTitle: {
+      color: '#e2e8f0',
+      marginBottom: '1rem',
+      fontSize: '1.25rem',
+      fontWeight: 700
+    },
+    ctaText: {
+      color: '#cbd5e1',
+      marginBottom: '1.5rem'
+    },
+    ctaButtons: {
+      display: 'flex',
+      gap: '1rem',
+      justifyContent: 'center',
+      flexWrap: 'wrap'
     },
     loading: {
       textAlign: 'center',
@@ -298,39 +428,104 @@ const Diagnostico = () => {
             <h1 style={{ ...styles.title, background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               {report.titulo}
             </h1>
-            <p style={styles.subtitle}>{report.resumen}</p>
+            <p style={styles.subtitle}>{report.resumen_situacion}</p>
           </div>
 
-          <div style={styles.reportSection}>
-            <h2 style={styles.reportH2}>Recomendaciones clave</h2>
-            {report.recomendaciones && report.recomendaciones.map((rec, i) => (
-              <div key={i} style={styles.recommendation}>
-                <div style={styles.recommendationTitle}>{rec.titulo}</div>
-                <div style={styles.recommendationDesc}>{rec.descripcion}</div>
+          {/* SCORE DEL NEGOCIO */}
+          {report.score_negocio && (
+            <div style={styles.reportSection}>
+              <h2 style={styles.reportH2}>Score de tu negocio</h2>
+              <div style={styles.scoreCard}>
+                {Object.entries(report.score_negocio).map(([pilar, score]) => (
+                  <div key={pilar} style={styles.scoreItem}>
+                    <p style={styles.scoreLabel}>{pilar.replace(/_/g, ' ')}</p>
+                    <p style={styles.scoreValue}>{score}/10</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
 
-          <div style={styles.reportSection}>
-            <h2 style={styles.reportH2}>Próximos pasos</h2>
-            <p style={{ color: '#cbd5e1', lineHeight: '1.6' }}>{report.proximos_pasos}</p>
-          </div>
+          {/* PROBLEMA CRÍTICO */}
+          {report.problema_critico && (
+            <div style={styles.problemBox}>
+              <h3 style={styles.problemTitle}>⚠️ Problema crítico</h3>
+              <p style={styles.problemText}>{report.problema_critico}</p>
+            </div>
+          )}
 
-          <div style={styles.reportSection}>
-            <h2 style={styles.reportH2}>Inversión estimada</h2>
-            <p style={{ color: '#cbd5e1', fontSize: '1.1rem', fontWeight: 600 }}>
-              {report.inversion_estimada}
-            </p>
-          </div>
+          {/* ROADMAP POR MES */}
+          {report.roadmap && (
+            <div style={styles.reportSection}>
+              <h2 style={styles.reportH2}>Tu roadmap de 3 meses</h2>
+              
+              {Object.entries(report.roadmap).map(([mes_key, mes_data]) => (
+                <div key={mes_key} style={styles.mesBlock}>
+                  <h3 style={styles.mesTitulo}>
+                    {mes_data.titulo}
+                  </h3>
+                  
+                  {mes_data.pilares && mes_data.pilares.map((pilar_obj, idx) => (
+                    <div key={idx} style={styles.pilarSection}>
+                      <p style={styles.pilarTitulo}>
+                        {pilar_obj.pilar}
+                      </p>
+                      <ul style={styles.pilarLista}>
+                        {pilar_obj.acciones && pilar_obj.acciones.map((accion, i) => (
+                          <li key={i}>{accion}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
 
+          {/* PRÓXIMOS 7 DÍAS */}
+          {report.proximos_7_dias && (
+            <div style={styles.proximosBox}>
+              <h3 style={styles.proximosTitle}>🚀 Próximos 7 días</h3>
+              <p style={styles.proximosText}>{report.proximos_7_dias}</p>
+            </div>
+          )}
+
+          {/* MÉTRICAS CLAVE */}
+          {report.metricas_clave && (
+            <div style={styles.reportSection}>
+              <h2 style={styles.reportH2}>Métricas a medir</h2>
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                {Object.entries(report.metricas_clave).map(([periodo, metrica]) => (
+                  <div key={periodo} style={styles.metricaBox}>
+                    <p style={styles.metricaPeriodo}>{periodo}</p>
+                    <p style={styles.metricaTexto}>{metrica}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* INVERSIÓN */}
+          {report.inversion_estimada && (
+            <div style={styles.reportSection}>
+              <h2 style={styles.reportH2}>Inversión estimada</h2>
+              <div style={styles.inversionBox}>
+                <p style={{ color: '#cbd5e1', fontSize: '15px', fontWeight: '500', margin: 0 }}>
+                  {report.inversion_estimada}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* CTA FINAL */}
           <div style={styles.ctaBox}>
-            <h3 style={{ color: '#e2e8f0', marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 700 }}>
+            <h3 style={styles.ctaTitle}>
               ¿Te gustaría ejecutar esta estrategia?
             </h3>
-            <p style={{ color: '#cbd5e1', marginBottom: '1.5rem' }}>
+            <p style={styles.ctaText}>
               Agendar una consulta gratis de 30 minutos
             </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={styles.ctaButtons}>
               <button 
                 style={{ ...styles.button, background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' }}
                 onClick={handleSchedule}
@@ -365,8 +560,8 @@ const Diagnostico = () => {
       `}</style>
 
       <div style={styles.header}>
-        <h1 style={styles.title}>Diagnóstico de Crecimiento</h1>
-        <p style={styles.subtitle}>Descubre dónde está tu negocio y qué hacer para crecer</p>
+        <h1 style={styles.title}>Roadmap de Negocio Personalizado</h1>
+        <p style={styles.subtitle}>Obtén un plan de 3 meses con acciones específicas para tu negocio (no solo marketing)</p>
       </div>
 
       <div style={styles.formSection}>
@@ -391,7 +586,7 @@ const Diagnostico = () => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>¿En qué etapa está tu negocio?</label>
+            <label style={styles.label}>¿En qué etapa está tu negocio? (Esto nos ayuda a priorizar qué hacer primero)</label>
             <div style={styles.radioGroup}>
               <div style={styles.radioItem}>
                 <input 
@@ -462,6 +657,7 @@ const Diagnostico = () => {
               required
             >
               <option value="">Selecciona un rango</option>
+              <option value="unknown">No tengo claridad en mis números</option>
               <option value="0-1m">Menos de $1.000.000</option>
               <option value="1-5m">$1.000.000 - $5.000.000</option>
               <option value="5-10m">$5.000.000 - $10.000.000</option>
@@ -471,7 +667,7 @@ const Diagnostico = () => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>¿Cuál es tu principal problema AHORA?</label>
+            <label style={styles.label}>¿Cuál es tu principal dolor de cabeza AHORA? (Esto es lo que más te quita el sueño)</label>
             <div style={styles.radioGroup}>
               <div style={styles.radioItem}>
                 <input 
@@ -552,6 +748,42 @@ const Diagnostico = () => {
               <div style={styles.radioItem}>
                 <input 
                   type="checkbox" 
+                  value="whatsapp"
+                  checked={formData.channels.includes('whatsapp')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  WhatsApp Business
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="partnerships"
+                  checked={formData.channels.includes('partnerships')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Alianzas / Partnerships
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
+                  value="offline"
+                  checked={formData.channels.includes('offline')}
+                  onChange={handleCheckboxChange}
+                  style={styles.radioInput}
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Presencia offline / Local
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="checkbox" 
                   value="organic"
                   checked={formData.channels.includes('organic')}
                   onChange={handleCheckboxChange}
@@ -625,7 +857,7 @@ const Diagnostico = () => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>¿Cuánto puedes invertir en Marketing de alto nivel?</label>
+            <label style={styles.label}>¿Cuánto puedes invertir en tu estrategia de crecimiento este año?</label>
             <select 
               name="budget" 
               value={formData.budget}
@@ -635,10 +867,10 @@ const Diagnostico = () => {
             >
               <option value="">Selecciona un rango</option>
               <option value="0">No tengo presupuesto aún</option>
-              <option value="100k-300k">$100.000 - $300.000</option>
+              <option value="50k-150k">$50.000 - $150.000</option>
+              <option value="150k-300k">$150.000 - $300.000</option>
               <option value="300k-500k">$300.000 - $500.000</option>
-              <option value="500k-1m">$500.000 - $1.000.000</option>
-              <option value="1m+">Más de $1.000.000</option>
+              <option value="500k+">Más de $500.000</option>
             </select>
           </div>
 
@@ -684,7 +916,21 @@ const Diagnostico = () => {
                   required
                 />
                 <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Retención / Lifetime value
+                  Retención / Clientes que vuelven
+                </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="metric" 
+                  value="revenue"
+                  checked={formData.metric === 'revenue'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Ingresos recurrentes (clientes que vuelven mensualmente)
                 </label>
               </div>
               <div style={styles.radioItem}>
@@ -700,6 +946,20 @@ const Diagnostico = () => {
                 <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
                   Visibilidad / Reconocimiento de marca
                 </label>
+              </div>
+              <div style={styles.radioItem}>
+                <input 
+                  type="radio" 
+                  name="metric" 
+                  value="efficiency"
+                  checked={formData.metric === 'efficiency'}
+                  onChange={handleInputChange}
+                  style={styles.radioInput}
+                  required
+                />
+                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
+                  Eficiencia operativa (hacer más con menos)
+                </label>  
               </div>
             </div>
           </div>
@@ -725,6 +985,18 @@ const Diagnostico = () => {
               onChange={handleInputChange}
               style={styles.input}
               required
+            />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Tu teléfono (WhatsApp)</label>
+            <input 
+              type="tel" 
+              name="phone" 
+              value={formData.phone}
+              onChange={handleInputChange}
+              style={styles.input}
+              placeholder="+54 9 3512 033845"
             />
           </div>
 
