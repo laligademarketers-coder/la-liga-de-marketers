@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, industry, stage, revenue, problem, channels, budget, metric } = req.body;
+    const { name, email, phone, industry, stage, revenue, problem, channels, budget, metric } = req.body;
 
     console.log('[diagnose] Body recibido:', { name, email, industry, stage });
 
@@ -24,161 +24,70 @@ export default async function handler(req, res) {
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
-    console.log('[diagnose] API key presente:', !!apiKey, '| Longitud:', apiKey?.length ?? 0);
-
     if (!apiKey) {
       console.error('[diagnose] ERROR: ANTHROPIC_API_KEY no configurada');
       return res.status(500).json({ error: 'API key not configured' });
     }
 
-    const prompt = `Eres un estratega de negocios experto. Tu tarea es crear un ROADMAP DE NEGOCIO ACCIONABLE (no solo marketing) basado en la situación actual del cliente.
+    const prompt = `Eres un experto en negocios. Analiza BREVEMENTE este negocio y devuelve SOLO JSON válido, sin markdown ni explicaciones:
 
-IMPORTANTE: Usa lenguaje profesional pero incluye explicaciones simples entre paréntesis para que cualquiera entienda sin conocimiento técnico.
+DATOS: Industria: ${industry}, Etapa: ${stage}, Ingresos: ${revenue}, Problema: ${problem}, Presupuesto: ${budget}, Métrica: ${metric}
 
-DATOS DEL NEGOCIO:
-- Nombre: ${name}
-- Email: ${email}
-- Industria: ${industry}
-- Etapa: ${stage}
-- Ingresos mensuales: ${revenue}
-- Problema principal: ${problem}
-- Canales activos: ${channels && channels.length > 0 ? channels.join(', ') : 'Ninguno'}
-- Presupuesto para crecimiento: ${budget}
-- Métrica clave: ${metric}
-
-ANÁLISIS REQUERIDO:
-Debes generar un roadmap de 3 meses que incluya 4 pilares:
-
-1. **OPERACIONES** (cómo estructurar el negocio)
-   - Procesos que necesita implementar (pasos y sistemas para trabajar mejor)
-   - Herramientas/software recomendadas (programas que te ayudan a automatizar)
-   - Equipo o delegación requerida (personas o tareas a tercerizar)
-
-2. **PRODUCTO/SERVICIO** (cómo mejorar lo que vende)
-   - Cambios en oferta (qué nuevos servicios ofrecer)
-   - Diferenciación vs competencia (qué te hace único vs tus competidores)
-   - Precio/modelo de negocio (cuánto cobrar y cómo facturar)
-
-3. **MARKETING/VENTAS** (cómo conseguir clientes)
-   - Canales prioritarios (dónde buscar tus clientes)
-   - Mensaje y propuesta de valor (qué decir para que te contraten)
-   - Estrategia de adquisición específica (plan concreto para traer clientes)
-
-4. **RECURRENCIA/RETENCIÓN** (cómo mantener clientes)
-   - Sistemas para que clientes vuelvan (cómo haces que sigan comprando)
-   - Upsell/cross-sell (vender más a clientes existentes)
-   - Relación a largo plazo (mantener la relación después de la venta)
-
-FORMATO RESPUESTA (JSON SOLO, sin markdown):
+DEVUELVE EXACTAMENTE ESTE JSON (reemplaza los valores, no cambies la estructura):
 {
   "titulo": "Roadmap de Negocio para ${industry}",
-  "resumen_situacion": "2-3 frases sobre el estado actual del negocio usando lenguaje simple",
+  "resumen_situacion": "Una frase corta sobre el estado del negocio",
   "score_negocio": {
-    "operaciones": "1-10",
-    "producto_servicio": "1-10",
-    "marketing_ventas": "1-10",
-    "recurrencia": "1-10"
+    "operaciones": 6,
+    "producto_servicio": 5,
+    "marketing_ventas": 4,
+    "recurrencia": 3
   },
-  "problema_critico": "El problema #1 que debe resolver PRIMERO (en lenguaje que cualquiera entienda)",
+  "problema_critico": "El problema más importante que debe resolver primero (una frase)",
   "roadmap": {
     "mes_1": {
       "titulo": "Fundamentos (Semana 1-4)",
       "pilares": [
-        {
-          "pilar": "Operaciones",
-          "acciones": ["acción 1 (explicación simple entre paréntesis)", "acción 2 (explicación)", "acción 3 (explicación)"]
-        },
-        {
-          "pilar": "Producto/Servicio",
-          "acciones": ["acción 1 (explicación simple)", "acción 2 (explicación)"]
-        },
-        {
-          "pilar": "Marketing/Ventas",
-          "acciones": ["acción 1 (explicación simple)", "acción 2 (explicación)", "acción 3 (explicación)"]
-        },
-        {
-          "pilar": "Recurrencia",
-          "acciones": ["acción 1 (explicación simple)"]
-        }
+        {"pilar": "Operaciones", "acciones": ["Acción 1 (explicación)", "Acción 2 (explicación)"]},
+        {"pilar": "Producto/Servicio", "acciones": ["Acción 1 (explicación)"]},
+        {"pilar": "Marketing/Ventas", "acciones": ["Acción 1 (explicación)", "Acción 2 (explicación)"]},
+        {"pilar": "Recurrencia", "acciones": ["Acción 1 (explicación)"]}
       ]
     },
     "mes_2": {
       "titulo": "Tracción (Semana 5-8)",
       "pilares": [
-        {
-          "pilar": "Operaciones",
-          "acciones": ["acción 1 (explicación simple)", "acción 2 (explicación)"]
-        },
-        {
-          "pilar": "Producto/Servicio",
-          "acciones": ["acción 1 (explicación simple)"]
-        },
-        {
-          "pilar": "Marketing/Ventas",
-          "acciones": ["acción 1 (explicación simple)", "acción 2 (explicación)"]
-        },
-        {
-          "pilar": "Recurrencia",
-          "acciones": ["acción 1 (explicación simple)", "acción 2 (explicación)"]
-        }
+        {"pilar": "Operaciones", "acciones": ["Acción 1 (explicación)"]},
+        {"pilar": "Producto/Servicio", "acciones": ["Acción 1 (explicación)"]},
+        {"pilar": "Marketing/Ventas", "acciones": ["Acción 1 (explicación)"]},
+        {"pilar": "Recurrencia", "acciones": ["Acción 1 (explicación)"]}
       ]
     },
     "mes_3": {
       "titulo": "Escala (Semana 9-12)",
       "pilares": [
-        {
-          "pilar": "Operaciones",
-          "acciones": ["acción 1 (explicación simple)"]
-        },
-        {
-          "pilar": "Producto/Servicio",
-          "acciones": ["acción 1 (explicación simple)"]
-        },
-        {
-          "pilar": "Marketing/Ventas",
-          "acciones": ["acción 1 (explicación simple)", "acción 2 (explicación)"]
-        },
-        {
-          "pilar": "Recurrencia",
-          "acciones": ["acción 1 (explicación simple)", "acción 2 (explicación)"]
-        }
+        {"pilar": "Operaciones", "acciones": ["Acción 1 (explicación)"]},
+        {"pilar": "Producto/Servicio", "acciones": ["Acción 1 (explicación)"]},
+        {"pilar": "Marketing/Ventas", "acciones": ["Acción 1 (explicación)"]},
+        {"pilar": "Recurrencia", "acciones": ["Acción 1 (explicación)"]}
       ]
     }
   },
   "metricas_clave": {
-    "mes_1": "Métrica a medir en mes 1 (explicar qué significa en lenguaje simple)",
-    "mes_2": "Métrica a medir en mes 2 (explicar qué significa en lenguaje simple)",
-    "mes_3": "Métrica a medir en mes 3 (explicar qué significa en lenguaje simple)"
+    "mes_1": "Métrica concreta para medir mes 1",
+    "mes_2": "Métrica concreta para medir mes 2",
+    "mes_3": "Métrica concreta para medir mes 3"
   },
-  "inversion_estimada": "Rango de inversión recomendada para ejecutar el roadmap (en dinero, con explicación de en qué gastarla)",
-  "proximos_7_dias": "3-5 acciones específicas para ESTA SEMANA sin esperar nada más (cada una con explicación simple de por qué hacerla)"
+  "inversion_estimada": "Rango de inversión en pesos argentinos",
+  "proximos_7_dias": "3-4 acciones concretas para esta semana"
 }
 
-RESTRICCIONES IMPORTANTES:
-- Sé específico: cada acción debe ser ejecutable HOY
-- Lenguaje accesible: usa palabras que una persona sin experiencia entienda, pero mantén profesionalismo
-- Explicaciones entre paréntesis: si usas un término técnico, explícalo de forma simple
-- Prioriza: no todo es importante, destaca los 20% que genera 80% del impacto
-- Realista: considera el stage del negocio y presupuesto disponible
-- Escalable: cada acción debe preparar el terreno para la siguiente
-- La recurrencia es el corazón: si el cliente no vuelve, es pérdida total
-
-EJEMPLOS DE LENGUAJE CON EXPLICACIONES:
-❌ INCORRECTO: "Implementar un CRM"
-✅ CORRECTO: "Implementar un CRM (sistema para organizar tus clientes y hacer seguimiento automático)"
-
-❌ INCORRECTO: "Optimizar tu CAC"
-✅ CORRECTO: "Reducir tu CAC (cuánto gastas para traer UN cliente nuevo)"
-
-❌ INCORRECTO: "Crear un funnel de conversión"
-✅ CORRECTO: "Crear un sistema donde primero atraes gente gratis, después los conoces mejor, y finalmente los vendes"
-
-TONALIDAD:
-- Mentor que sabe pero explica con claridad
-- Directo, sin rodeos
-- Inspirador pero realista
-- Accionable, no teórico
-- Accesible para cualquiera, profesional en fondo`;
+REGLAS:
+- Devuelve SOLO el JSON, nada más
+- Sé específico: cada acción debe ser ejecutable
+- Lenguaje profesional pero simple, con explicaciones entre paréntesis
+- Realista: considera el stage y presupuesto del negocio
+- La recurrencia es clave: prioriza acciones para que clientes vuelvan`;
 
     console.log('[diagnose] Llamando a Claude Haiku...');
 
@@ -191,7 +100,7 @@ TONALIDAD:
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5',
-        max_tokens: 1500,
+        max_tokens: 2000,
         messages: [
           { role: 'user', content: prompt }
         ]
@@ -221,26 +130,25 @@ TONALIDAD:
 
     const text = data.content[0].text;
 
-    console.log('[diagnose] Texto crudo (primeros 300 chars):', text.substring(0, 300));
+    console.log('[diagnose] Texto crudo (primeros 500 chars):', text.substring(0, 500));
 
+    // Limpia markdown
     const cleaned = text
       .replace(/```json\s*/gi, '')
       .replace(/```\s*/gi, '')
       .trim();
 
+    console.log('[diagnose] Texto limpio (primeros 500 chars):', cleaned.substring(0, 500));
+
+    // Encuentra JSON
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
 
     if (!jsonMatch) {
-      console.error('[diagnose] No se encontró JSON:', cleaned.substring(0, 300));
-      return res.status(200).json({
-        titulo: `Roadmap de Negocio para ${industry}`,
-        resumen_situacion: 'Análisis completado.',
-        score_negocio: { operaciones: 5, producto_servicio: 5, marketing_ventas: 5, recurrencia: 5 },
-        problema_critico: 'Necesitas un diagnóstico personalizado',
-        roadmap: { mes_1: { titulo: 'Fundamentos', pilares: [] }, mes_2: { titulo: 'Tracción', pilares: [] }, mes_3: { titulo: 'Escala', pilares: [] } },
-        metricas_clave: { mes_1: 'Por definir', mes_2: 'Por definir', mes_3: 'Por definir' },
-        inversion_estimada: 'A definir según estrategia',
-        proximos_7_dias: 'Agendá una consulta para análisis personalizado.'
+      console.error('[diagnose] No se encontró JSON. Texto limpio:', cleaned);
+      return res.status(500).json({
+        error: 'Invalid response format from Claude',
+        detail: 'Could not parse JSON from response',
+        rawText: cleaned.substring(0, 200)
       });
     }
 
@@ -250,15 +158,11 @@ TONALIDAD:
       return res.status(200).json(report);
     } catch (parseError) {
       console.error('[diagnose] Parse error:', parseError.message);
-      return res.status(200).json({
-        titulo: `Roadmap de Negocio para ${industry}`,
-        resumen_situacion: 'Análisis completado.',
-        score_negocio: { operaciones: 5, producto_servicio: 5, marketing_ventas: 5, recurrencia: 5 },
-        problema_critico: 'Necesitas un diagnóstico personalizado',
-        roadmap: { mes_1: { titulo: 'Fundamentos', pilares: [] }, mes_2: { titulo: 'Tracción', pilares: [] }, mes_3: { titulo: 'Escala', pilares: [] } },
-        metricas_clave: { mes_1: 'Por definir', mes_2: 'Por definir', mes_3: 'Por definir' },
-        inversion_estimada: 'A definir según estrategia',
-        proximos_7_dias: 'Agendá una consulta para análisis personalizado.'
+      console.error('[diagnose] JSON encontrado:', jsonMatch[0].substring(0, 300));
+      return res.status(500).json({
+        error: 'JSON parse error',
+        detail: parseError.message,
+        attemptedJson: jsonMatch[0].substring(0, 200)
       });
     }
 
