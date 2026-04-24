@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+/* ── HELPER: genera event_id único ── */
+const generateEventId = () =>
+  Math.floor(Date.now() / 1000) + '_' + Math.random().toString(36).substr(2, 9);
+
 const Diagnostico = () => {
   const [step, setStep] = useState('form');
   const [loading, setLoading] = useState(false);
@@ -29,7 +33,7 @@ const Diagnostico = () => {
     const { value, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      channels: checked 
+      channels: checked
         ? [...prev.channels, value]
         : prev.channels.filter(c => c !== value)
     }));
@@ -39,9 +43,7 @@ const Diagnostico = () => {
     try {
       const response = await fetch('/api/diagnose', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: data.name,
           email: data.email,
@@ -56,12 +58,8 @@ const Diagnostico = () => {
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate report');
-      }
-
-      const report = await response.json();
-      return report;
+      if (!response.ok) throw new Error('Failed to generate report');
+      return await response.json();
     } catch (error) {
       console.error('Error:', error);
       return null;
@@ -70,35 +68,30 @@ const Diagnostico = () => {
 
   const saveToSupabase = async (data, simpleReport) => {
     try {
-      const response = await fetch(
-        `${SUPABASE_URL}/rest/v1/diagnostics`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
-          },
-          body: JSON.stringify({
-            name: data.name,
-            email: data.email,
-            phone: data.phone,
-            industry: data.industry,
-            stage: data.stage,
-            revenue: data.revenue,
-            problem: data.problem,
-            channels: data.channels,
-            budget: data.budget,
-            metric: data.metric,
-            simple_report: simpleReport,
-            status: 'pending'
-          })
-        }
-      );
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/diagnostics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          industry: data.industry,
+          stage: data.stage,
+          revenue: data.revenue,
+          problem: data.problem,
+          channels: data.channels,
+          budget: data.budget,
+          metric: data.metric,
+          simple_report: simpleReport,
+          status: 'pending'
+        })
+      });
 
-      if (!response.ok) {
-        console.error('Supabase error:', await response.text());
-      }
+      if (!response.ok) console.error('Supabase error:', await response.text());
       return response.ok;
     } catch (error) {
       console.error('Error saving to Supabase:', error);
@@ -107,44 +100,66 @@ const Diagnostico = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  // 🔴 AGREGAR ESTO - dataLayer para GTM/Meta
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: 'lead',
-    event_id: Math.floor(Date.now() / 1000) + '_' + Math.random().toString(36).substr(2, 9),
-    user_name: formData.name,
-    user_email: formData.email,
-    user_phone: formData.phone,
-    user_industry: formData.industry,
-    user_stage: formData.stage,
-    user_revenue: formData.revenue,
-    user_problem: formData.problem,
-    user_budget: formData.budget,
-    user_metric: formData.metric,
-    conversion_value: 0,
-    currency: 'ARS'
-  });
+    // ✅ Track lead via dataLayer → GTM maneja GA4 + Meta CAPI
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'lead',
+      event_id: generateEventId(),
+      user_name: formData.name,
+      user_email: formData.email,
+      user_phone: formData.phone,
+      user_industry: formData.industry,
+      user_stage: formData.stage,
+      user_revenue: formData.revenue,
+      user_problem: formData.problem,
+      user_budget: formData.budget,
+      user_metric: formData.metric,
+      conversion_value: 0,
+      currency: 'ARS'
+    });
 
-  const simpleReport = await generateHaikuReport(formData);
-  
-  if (simpleReport) {
-    await saveToSupabase(formData, simpleReport);
-    setReport(simpleReport);
-    setStep('report');
-  }
+    const simpleReport = await generateHaikuReport(formData);
 
-  setLoading(false);
-};
+    if (simpleReport) {
+      await saveToSupabase(formData, simpleReport);
+      setReport(simpleReport);
+      setStep('report');
+    }
 
+    setLoading(false);
+  };
+
+  // ✅ Track click WhatsApp desde reporte
   const handleContact = () => {
-    const msg = encodeURIComponent(`Hola! Completé el diagnóstico y me gustaría una consulta personalizada.\n\nNombre: ${formData.name}\nEmail: ${formData.email}`);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'click_whatsapp',
+      event_id: generateEventId(),
+      location: 'reporte_diagnostico',
+      user_email: formData.email,
+      user_name: formData.name
+    });
+
+    const msg = encodeURIComponent(
+      `Hola! Completé el diagnóstico y me gustaría una consulta personalizada.\n\nNombre: ${formData.name}\nEmail: ${formData.email}`
+    );
     window.open(`https://wa.me/5493512033845?text=${msg}`, '_blank');
   };
 
+  // ✅ Track click Agendar desde reporte
   const handleSchedule = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'click_agendar',
+      event_id: generateEventId(),
+      location: 'reporte_diagnostico',
+      user_email: formData.email,
+      user_name: formData.name
+    });
+
     window.open('https://calendar.app.google/fMT32F18mFNct2Bg6', '_blank');
   };
 
@@ -181,9 +196,7 @@ const Diagnostico = () => {
       padding: '2.5rem',
       backdropFilter: 'blur(10px)'
     },
-    formGroup: {
-      marginBottom: '2rem'
-    },
+    formGroup: { marginBottom: '2rem' },
     label: {
       display: 'block',
       fontWeight: 600,
@@ -212,25 +225,10 @@ const Diagnostico = () => {
       fontSize: '0.95rem',
       boxSizing: 'border-box'
     },
-    radioGroup: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '0.75rem'
-    },
-    radioItem: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.75rem'
-    },
-    radioInput: {
-      cursor: 'pointer',
-      accentColor: '#a855f7'
-    },
-    checkboxGroup: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '0.75rem'
-    },
+    radioGroup: { display: 'flex', flexDirection: 'column', gap: '0.75rem' },
+    radioItem: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+    radioInput: { cursor: 'pointer', accentColor: '#a855f7' },
+    checkboxGroup: { display: 'flex', flexDirection: 'column', gap: '0.75rem' },
     button: {
       padding: '0.875rem 2rem',
       background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
@@ -256,18 +254,8 @@ const Diagnostico = () => {
       paddingBottom: '2rem',
       borderBottom: '1px solid rgba(168, 85, 247, 0.1)'
     },
-    reportH2: {
-      fontSize: '1.5rem',
-      fontWeight: 700,
-      marginBottom: '1rem',
-      color: '#fff'
-    },
-    reportH3: {
-      fontSize: '1.2rem',
-      fontWeight: 700,
-      marginBottom: '1rem',
-      color: '#a855f7'
-    },
+    reportH2: { fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#fff' },
+    reportH3: { fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem', color: '#a855f7' },
     scoreCard: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
@@ -280,18 +268,8 @@ const Diagnostico = () => {
       borderRadius: '8px',
       textAlign: 'center'
     },
-    scoreLabel: {
-      fontSize: '12px',
-      color: '#cbd5e1',
-      margin: '0 0 0.5rem',
-      textTransform: 'capitalize'
-    },
-    scoreValue: {
-      fontSize: '28px',
-      fontWeight: '700',
-      color: '#e2e8f0',
-      margin: 0
-    },
+    scoreLabel: { fontSize: '12px', color: '#cbd5e1', margin: '0 0 0.5rem', textTransform: 'capitalize' },
+    scoreValue: { fontSize: '28px', fontWeight: '700', color: '#e2e8f0', margin: 0 },
     problemBox: {
       background: 'rgba(236, 72, 153, 0.15)',
       padding: '1.25rem',
@@ -299,68 +277,24 @@ const Diagnostico = () => {
       borderLeft: '3px solid #ec4899',
       marginBottom: '2rem'
     },
-    problemTitle: {
-      fontSize: '14px',
-      fontWeight: '700',
-      color: '#e2e8f0',
-      margin: '0 0 0.5rem'
-    },
-    problemText: {
-      color: '#cbd5e1',
-      fontSize: '14px',
-      margin: 0,
-      lineHeight: '1.6'
-    },
+    problemTitle: { fontSize: '14px', fontWeight: '700', color: '#e2e8f0', margin: '0 0 0.5rem' },
+    problemText: { color: '#cbd5e1', fontSize: '14px', margin: 0, lineHeight: '1.6' },
     mesBlock: {
       marginBottom: '2rem',
       paddingBottom: '2rem',
       borderBottom: '1px solid rgba(168, 85, 247, 0.1)'
     },
-    mesTitulo: {
-      fontSize: '16px',
-      fontWeight: '700',
-      color: '#a855f7',
-      marginBottom: '1rem'
-    },
-    pilarSection: {
-      marginBottom: '1.5rem'
-    },
+    mesTitulo: { fontSize: '16px', fontWeight: '700', color: '#a855f7', marginBottom: '1rem' },
+    pilarSection: { marginBottom: '1.5rem' },
     pilarTitulo: {
-      fontSize: '13px',
-      fontWeight: '600',
-      color: '#e2e8f0',
-      marginBottom: '0.5rem',
-      textTransform: 'uppercase'
+      fontSize: '13px', fontWeight: '600', color: '#e2e8f0',
+      marginBottom: '0.5rem', textTransform: 'uppercase'
     },
-    pilarLista: {
-      margin: 0,
-      paddingLeft: '1.25rem',
-      color: '#cbd5e1',
-      fontSize: '14px',
-      lineHeight: '1.8'
-    },
-    metricaBox: {
-      background: 'rgba(168, 85, 247, 0.08)',
-      padding: '1rem',
-      borderRadius: '8px'
-    },
-    metricaPeriodo: {
-      fontSize: '12px',
-      color: '#a855f7',
-      fontWeight: '600',
-      margin: '0 0 0.5rem',
-      textTransform: 'capitalize'
-    },
-    metricaTexto: {
-      color: '#cbd5e1',
-      fontSize: '14px',
-      margin: 0
-    },
-    inversionBox: {
-      background: 'rgba(168, 85, 247, 0.08)',
-      padding: '1rem',
-      borderRadius: '8px'
-    },
+    pilarLista: { margin: 0, paddingLeft: '1.25rem', color: '#cbd5e1', fontSize: '14px', lineHeight: '1.8' },
+    metricaBox: { background: 'rgba(168, 85, 247, 0.08)', padding: '1rem', borderRadius: '8px' },
+    metricaPeriodo: { fontSize: '12px', color: '#a855f7', fontWeight: '600', margin: '0 0 0.5rem', textTransform: 'capitalize' },
+    metricaTexto: { color: '#cbd5e1', fontSize: '14px', margin: 0 },
+    inversionBox: { background: 'rgba(168, 85, 247, 0.08)', padding: '1rem', borderRadius: '8px' },
     proximosBox: {
       background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
       padding: '1.5rem',
@@ -368,18 +302,8 @@ const Diagnostico = () => {
       marginBottom: '2rem',
       borderLeft: '3px solid #22c55e'
     },
-    proximosTitle: {
-      fontSize: '14px',
-      fontWeight: '700',
-      color: '#86efac',
-      margin: '0 0 0.75rem'
-    },
-    proximosText: {
-      color: '#cbd5e1',
-      fontSize: '14px',
-      margin: 0,
-      lineHeight: '1.6'
-    },
+    proximosTitle: { fontSize: '14px', fontWeight: '700', color: '#86efac', margin: '0 0 0.75rem' },
+    proximosText: { color: '#cbd5e1', fontSize: '14px', margin: 0, lineHeight: '1.6' },
     ctaBox: {
       background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)',
       border: '1px solid rgba(168, 85, 247, 0.3)',
@@ -388,27 +312,10 @@ const Diagnostico = () => {
       textAlign: 'center',
       marginTop: '2rem'
     },
-    ctaTitle: {
-      color: '#e2e8f0',
-      marginBottom: '1rem',
-      fontSize: '1.25rem',
-      fontWeight: 700
-    },
-    ctaText: {
-      color: '#cbd5e1',
-      marginBottom: '1.5rem'
-    },
-    ctaButtons: {
-      display: 'flex',
-      gap: '1rem',
-      justifyContent: 'center',
-      flexWrap: 'wrap'
-    },
-    loading: {
-      textAlign: 'center',
-      padding: '3rem 1.5rem',
-      color: '#cbd5e1'
-    },
+    ctaTitle: { color: '#e2e8f0', marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 700 },
+    ctaText: { color: '#cbd5e1', marginBottom: '1.5rem' },
+    ctaButtons: { display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' },
+    loading: { textAlign: 'center', padding: '3rem 1.5rem', color: '#cbd5e1' },
     spinner: {
       display: 'inline-block',
       width: '40px',
@@ -423,16 +330,10 @@ const Diagnostico = () => {
   if (loading) {
     return (
       <div style={styles.container}>
-        <style>{`
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         <div style={styles.loading}>
           <div style={styles.spinner}></div>
-          <p style={{ marginTop: '1.5rem', fontSize: '1.1rem' }}>
-            Analizando tu negocio con IA...
-          </p>
+          <p style={{ marginTop: '1.5rem', fontSize: '1.1rem' }}>Analizando tu negocio con IA...</p>
         </div>
       </div>
     );
@@ -476,18 +377,12 @@ const Diagnostico = () => {
           {report.roadmap && (
             <div style={styles.reportSection}>
               <h2 style={styles.reportH2}>Tu roadmap de 3 meses</h2>
-              
               {Object.entries(report.roadmap).map(([mes_key, mes_data]) => (
                 <div key={mes_key} style={styles.mesBlock}>
-                  <h3 style={styles.mesTitulo}>
-                    {mes_data.titulo}
-                  </h3>
-                  
+                  <h3 style={styles.mesTitulo}>{mes_data.titulo}</h3>
                   {mes_data.pilares && mes_data.pilares.map((pilar_obj, idx) => (
                     <div key={idx} style={styles.pilarSection}>
-                      <p style={styles.pilarTitulo}>
-                        {pilar_obj.pilar}
-                      </p>
+                      <p style={styles.pilarTitulo}>{pilar_obj.pilar}</p>
                       <ul style={styles.pilarLista}>
                         {pilar_obj.acciones && pilar_obj.acciones.map((accion, i) => (
                           <li key={i}>{accion}</li>
@@ -537,20 +432,16 @@ const Diagnostico = () => {
 
           {/* CTA FINAL */}
           <div style={styles.ctaBox}>
-            <h3 style={styles.ctaTitle}>
-              ¿Te gustaría ejecutar esta estrategia?
-            </h3>
-            <p style={styles.ctaText}>
-              Agendar una consulta gratis de 30 minutos
-            </p>
+            <h3 style={styles.ctaTitle}>¿Te gustaría ejecutar esta estrategia?</h3>
+            <p style={styles.ctaText}>Agendar una consulta gratis de 30 minutos</p>
             <div style={styles.ctaButtons}>
-              <button 
+              <button
                 style={{ ...styles.button, background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' }}
                 onClick={handleSchedule}
               >
                 Agendar consulta →
               </button>
-              <button 
+              <button
                 style={{ ...styles.button, background: 'transparent', border: '1px solid rgba(168, 85, 247, 0.5)', color: '#e2e8f0' }}
                 onClick={handleContact}
               >
@@ -584,15 +475,10 @@ const Diagnostico = () => {
 
       <div style={styles.formSection}>
         <form onSubmit={handleSubmit}>
+
           <div style={styles.formGroup}>
             <label style={styles.label}>¿En qué industria opera tu negocio?</label>
-            <select 
-              name="industry" 
-              value={formData.industry}
-              onChange={handleInputChange}
-              style={styles.select}
-              required
-            >
+            <select name="industry" value={formData.industry} onChange={handleInputChange} style={styles.select} required>
               <option value="">Selecciona una opción</option>
               <option value="servicios-leads">Servicios B2B / Lead generation</option>
               <option value="clinicas">Clínicas / Salud</option>
@@ -604,76 +490,25 @@ const Diagnostico = () => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>¿En qué etapa está tu negocio? (Esto nos ayuda a priorizar qué hacer primero)</label>
+            <label style={styles.label}>¿En qué etapa está tu negocio?</label>
             <div style={styles.radioGroup}>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="stage" 
-                  value="startup"
-                  checked={formData.stage === 'startup'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Startup / Menos de 1 año
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="stage" 
-                  value="growth"
-                  checked={formData.stage === 'growth'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Crecimiento / 1-3 años
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="stage" 
-                  value="established"
-                  checked={formData.stage === 'established'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Consolidado / 3+ años
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="stage" 
-                  value="scaling"
-                  checked={formData.stage === 'scaling'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Escalando / Múltiples líneas de negocio
-                </label>
-              </div>
+              {[
+                { value: 'startup', label: 'Startup / Menos de 1 año' },
+                { value: 'growth', label: 'Crecimiento / 1-3 años' },
+                { value: 'established', label: 'Consolidado / 3+ años' },
+                { value: 'scaling', label: 'Escalando / Múltiples líneas de negocio' }
+              ].map(opt => (
+                <div key={opt.value} style={styles.radioItem}>
+                  <input type="radio" name="stage" value={opt.value} checked={formData.stage === opt.value} onChange={handleInputChange} style={styles.radioInput} required />
+                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>{opt.label}</label>
+                </div>
+              ))}
             </div>
           </div>
 
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Cuál es tu ingreso mensual aproximado?</label>
-            <select 
-              name="revenue" 
-              value={formData.revenue}
-              onChange={handleInputChange}
-              style={styles.select}
-              required
-            >
+            <select name="revenue" value={formData.revenue} onChange={handleInputChange} style={styles.select} required>
               <option value="">Selecciona un rango</option>
               <option value="unknown">No tengo claridad en mis números</option>
               <option value="0-1m">Menos de $1.000.000</option>
@@ -685,204 +520,48 @@ const Diagnostico = () => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>¿Cuál es tu principal dolor de cabeza AHORA? (Esto es lo que más te quita el sueño)</label>
+            <label style={styles.label}>¿Cuál es tu principal dolor de cabeza AHORA?</label>
             <div style={styles.radioGroup}>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="problem" 
-                  value="leads"
-                  checked={formData.problem === 'leads'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  No tengo suficientes leads/clientes potenciales
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="problem" 
-                  value="conversion"
-                  checked={formData.problem === 'conversion'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Tengo tráfico pero baja conversión
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="problem" 
-                  value="retention"
-                  checked={formData.problem === 'retention'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Pierdo clientes rápidamente
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="problem" 
-                  value="visibility"
-                  checked={formData.problem === 'visibility'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Nadie conoce mi negocio
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="problem" 
-                  value="roi"
-                  checked={formData.problem === 'roi'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  No sé si mis gastos en marketing dan resultado
-                </label>
-              </div>
+              {[
+                { value: 'leads', label: 'No tengo suficientes leads/clientes potenciales' },
+                { value: 'conversion', label: 'Tengo tráfico pero baja conversión' },
+                { value: 'retention', label: 'Pierdo clientes rápidamente' },
+                { value: 'visibility', label: 'Nadie conoce mi negocio' },
+                { value: 'roi', label: 'No sé si mis gastos en marketing dan resultado' }
+              ].map(opt => (
+                <div key={opt.value} style={styles.radioItem}>
+                  <input type="radio" name="problem" value={opt.value} checked={formData.problem === opt.value} onChange={handleInputChange} style={styles.radioInput} required />
+                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>{opt.label}</label>
+                </div>
+              ))}
             </div>
           </div>
 
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Qué canales usas actualmente?</label>
             <div style={styles.checkboxGroup}>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="whatsapp"
-                  checked={formData.channels.includes('whatsapp')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  WhatsApp Business
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="partnerships"
-                  checked={formData.channels.includes('partnerships')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Alianzas / Partnerships
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="offline"
-                  checked={formData.channels.includes('offline')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Presencia offline / Local
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="organic"
-                  checked={formData.channels.includes('organic')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Tráfico orgánico / SEO
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="paid"
-                  checked={formData.channels.includes('paid')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Publicidad pagada (Meta, Google)
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="social"
-                  checked={formData.channels.includes('social')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Redes sociales
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="email"
-                  checked={formData.channels.includes('email')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Email marketing
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="referral"
-                  checked={formData.channels.includes('referral')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Referidos / Boca a boca
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="checkbox" 
-                  value="none"
-                  checked={formData.channels.includes('none')}
-                  onChange={handleCheckboxChange}
-                  style={styles.radioInput}
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  No tengo estrategia digital
-                </label>
-              </div>
+              {[
+                { value: 'whatsapp', label: 'WhatsApp Business' },
+                { value: 'partnerships', label: 'Alianzas / Partnerships' },
+                { value: 'offline', label: 'Presencia offline / Local' },
+                { value: 'organic', label: 'Tráfico orgánico / SEO' },
+                { value: 'paid', label: 'Publicidad pagada (Meta, Google)' },
+                { value: 'social', label: 'Redes sociales' },
+                { value: 'email', label: 'Email marketing' },
+                { value: 'referral', label: 'Referidos / Boca a boca' },
+                { value: 'none', label: 'No tengo estrategia digital' }
+              ].map(opt => (
+                <div key={opt.value} style={styles.radioItem}>
+                  <input type="checkbox" value={opt.value} checked={formData.channels.includes(opt.value)} onChange={handleCheckboxChange} style={styles.radioInput} />
+                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>{opt.label}</label>
+                </div>
+              ))}
             </div>
           </div>
 
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Cuánto puedes invertir en tu estrategia de crecimiento este año?</label>
-            <select 
-              name="budget" 
-              value={formData.budget}
-              onChange={handleInputChange}
-              style={styles.select}
-              required
-            >
+            <select name="budget" value={formData.budget} onChange={handleInputChange} style={styles.select} required>
               <option value="">Selecciona un rango</option>
               <option value="0">No tengo presupuesto aún</option>
               <option value="50k-150k">$50.000 - $150.000</option>
@@ -895,127 +574,35 @@ const Diagnostico = () => {
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Cuál es tu métrica más importante?</label>
             <div style={styles.radioGroup}>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="metric" 
-                  value="leads"
-                  checked={formData.metric === 'leads'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Cantidad de leads / clientes nuevos
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="metric" 
-                  value="sales"
-                  checked={formData.metric === 'sales'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Ventas / Ingresos
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="metric" 
-                  value="retention"
-                  checked={formData.metric === 'retention'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Retención / Clientes que vuelven
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="metric" 
-                  value="revenue"
-                  checked={formData.metric === 'revenue'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Ingresos recurrentes (clientes que vuelven mensualmente)
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="metric" 
-                  value="brand"
-                  checked={formData.metric === 'brand'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Visibilidad / Reconocimiento de marca
-                </label>
-              </div>
-              <div style={styles.radioItem}>
-                <input 
-                  type="radio" 
-                  name="metric" 
-                  value="efficiency"
-                  checked={formData.metric === 'efficiency'}
-                  onChange={handleInputChange}
-                  style={styles.radioInput}
-                  required
-                />
-                <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>
-                  Eficiencia operativa (hacer más con menos)
-                </label>  
-              </div>
+              {[
+                { value: 'leads', label: 'Cantidad de leads / clientes nuevos' },
+                { value: 'sales', label: 'Ventas / Ingresos' },
+                { value: 'retention', label: 'Retención / Clientes que vuelven' },
+                { value: 'revenue', label: 'Ingresos recurrentes (clientes que vuelven mensualmente)' },
+                { value: 'brand', label: 'Visibilidad / Reconocimiento de marca' },
+                { value: 'efficiency', label: 'Eficiencia operativa (hacer más con menos)' }
+              ].map(opt => (
+                <div key={opt.value} style={styles.radioItem}>
+                  <input type="radio" name="metric" value={opt.value} checked={formData.metric === opt.value} onChange={handleInputChange} style={styles.radioInput} required />
+                  <label style={{ margin: 0, color: '#cbd5e1', cursor: 'pointer' }}>{opt.label}</label>
+                </div>
+              ))}
             </div>
           </div>
 
           <div style={styles.formGroup}>
             <label style={styles.label}>¿Cuál es tu nombre?</label>
-            <input 
-              type="text" 
-              name="name" 
-              value={formData.name}
-              onChange={handleInputChange}
-              style={styles.input}
-              required
-            />
+            <input type="text" name="name" value={formData.name} onChange={handleInputChange} style={styles.input} required />
           </div>
 
           <div style={styles.formGroup}>
             <label style={styles.label}>Tu email de contacto</label>
-            <input 
-              type="email" 
-              name="email" 
-              value={formData.email}
-              onChange={handleInputChange}
-              style={styles.input}
-              required
-            />
+            <input type="email" name="email" value={formData.email} onChange={handleInputChange} style={styles.input} required />
           </div>
 
           <div style={styles.formGroup}>
             <label style={styles.label}>Tu teléfono (WhatsApp)</label>
-            <input 
-              type="tel" 
-              name="phone" 
-              value={formData.phone}
-              onChange={handleInputChange}
-              style={styles.input}
-              placeholder="+54 9 3512 033845"
-            />
+            <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} style={styles.input} placeholder="+54 9 3512 033845" />
           </div>
 
           <button type="submit" style={styles.button}>
