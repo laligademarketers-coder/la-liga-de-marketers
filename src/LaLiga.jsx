@@ -6,6 +6,10 @@ const SHEETS_WEBHOOK = "https://script.google.com/macros/s/AKfycbzWVSlY5FhpXy6n9
 const WA_BASE = `https://wa.me/${WA_NUMBER}`;
 const GCAL_URL = "https://calendar.app.google/fMT32F18mFNct2Bg6";
 
+/* ── HELPER: genera event_id único ── */
+const generateEventId = () =>
+  Math.floor(Date.now() / 1000) + "_" + Math.random().toString(36).substr(2, 9);
+
 /* ── REACT BITS COMPONENTS ── */
 function BlurText({ text, delay = 40, direction = "top", threshold = 0 }) {
   const ref = useRef(null);
@@ -163,77 +167,42 @@ function LeadModal({ onClose }) {
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
   const [sent, setSent] = useState(false);
   const handle = (k, v) => setForm(f => ({ ...f, [k]: v }));
-const submit = async () => {
+
+  const submit = async () => {
     if (!form.nombre || !form.email) return;
-    
-    // 1. Track Meta Pixel (Client-Side)
-    if (window.fbq) {
-      window.fbq('track', 'Contact', {
-        value: 0,
-        currency: 'ARS'
-      });
-    }
-    
-    // 2. Track Google Analytics Lead Event
-    if (window.gtag) {
-      window.gtag('event', 'generate_lead', {
-        currency: 'ARS',
-        value: 0
-      });
-    }
-    
-    // 3. Track Meta Conversion API (Server-Side)
-    const trackConversionAPI = async () => {
-      try {
-        const userData = {
-          em: form.email ? btoa(form.email.toLowerCase()).toString() : null,
-          fn: form.nombre ? btoa(form.nombre.toLowerCase().split(' ')[0]).toString() : null,
-          ln: form.nombre ? btoa(form.nombre.toLowerCase().split(' ').pop()).toString() : null
-        };
-        
-        await fetch('https://graph.facebook.com/v18.0/1265283559068729/events?access_token=EAASokIySZBvwBRNqsBZBnVtx44PEMsHWxLwxGZAZC4AgumGnKAsvy4iydKXOdZATMj5D5CbXecLE182bZALTE29qdztuhyAjczSHNwy2p3OxalLsQYzpOgZCzrZCGnJ305Qvib4wD1hwyuAkRRczY3TNFHAdHZAk29NQrKl2srRrE3YLEnPiCln4l8IFYid2jVwZDZD', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            data: [{
-              event_name: 'Lead',
-              event_time: Math.floor(Date.now() / 1000),
-              user_data: userData,
-              custom_data: {
-                currency: 'ARS',
-                value: 0
-              }
-            }]
-          })
-        });
-      } catch (err) {
-        console.error('Conversion API error:', err);
-      }
-    };
-    
-    // Ejecutar tracking
-    await trackConversionAPI();
-    
-    // Pequeño delay para que registren los eventos
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // 4. Guardar en Google Sheets
+
+    // ✅ TRACKING VIA DATALAYER → GTM maneja todo (GA4 + Meta CAPI)
+    // NO se llama directamente a la API de Meta ni a gtag/fbq
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "lead_landing",                          // Evento separado del diagnóstico
+      event_id: generateEventId(),                    // Deduplicación con CAPI
+      user_name: form.nombre,
+      user_email: form.email,
+      user_message: form.mensaje || "",
+      conversion_value: 0,
+      currency: "ARS",
+      lead_source: "modal_consulta_gratis"            // Identifica de dónde viene el lead
+    });
+
+    // Guardar en Google Sheets
     try {
       await fetch(SHEETS_WEBHOOK, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, fuente: "Landing Page" })
+        body: JSON.stringify({ ...form, fuente: "Landing Page - Modal" })
       });
     } catch (err) {
       console.error("Sheets error:", err);
     }
-    
-    // 5. Abrir WhatsApp con datos pre-cargados
+
+    // Abrir WhatsApp con datos pre-cargados
     const msg = encodeURIComponent(`Hola La Liga! 👋\n\nSoy *${form.nombre}*\nEmail: ${form.email}\n\n${form.mensaje || "Me interesa una consulta gratuita."}`);
     window.open(`${WA_BASE}?text=${msg}`, "_blank");
     setSent(true);
-};
+  };
+
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }} onClick={onClose} />
@@ -294,6 +263,16 @@ export default function LaLiga() {
     window.addEventListener("scroll", h);
     return () => window.removeEventListener("scroll", h);
   }, []);
+
+  // ✅ HELPER: trackear clicks de botones via dataLayer
+  const trackClick = (eventName, params = {}) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: eventName,
+      event_id: generateEventId(),
+      ...params
+    });
+  };
 
   const grad = "linear-gradient(135deg,#7c3aed,#ec4899)";
   const gText = { background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" };
@@ -382,11 +361,18 @@ export default function LaLiga() {
             </div>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
-            <button onClick={() => window.open(GCAL_URL, "_blank")}
+            <button
+              onClick={() => {
+                trackClick("click_agendar", { location: "nav" });
+                window.open(GCAL_URL, "_blank");
+              }}
               style={{ padding: "8px 16px", borderRadius: 10, background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.3)", color: "#c4b5fd", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
               <Calendar size={14} /> Agendar
             </button>
-            <StarBorder size="sm" onClick={() => setShowModal(true)}>
+            <StarBorder size="sm" onClick={() => {
+              trackClick("click_cta_consulta", { location: "nav" });
+              setShowModal(true);
+            }}>
               Consulta Gratis
             </StarBorder>
           </div>
@@ -415,22 +401,33 @@ export default function LaLiga() {
           </ScrollReveal>
           <ScrollReveal delay={300}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center", marginBottom: 64 }}>
-  <StarBorder size="md" onClick={() => setShowModal(true)}>
-    📋 Consulta Gratuita <ArrowUpRight size={18} />
-  </StarBorder>
-  <button onClick={() => window.open(GCAL_URL, "_blank")}
-    style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(139,92,246,0.4)", background: "rgba(109,40,217,0.1)", color: "#c4b5fd", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
-    onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(168,85,247,0.7)"}
-    onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.4)"}>
-    <Calendar size={18} /> Agendar Reunión
-  </button>
-  <button onClick={() => window.location.href = "/diagnostico"}
-    style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(34,197,94,0.4)", background: "rgba(34,197,94,0.1)", color: "#86efac", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
-    onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(34,197,94,0.7)"}
-    onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(34,197,94,0.4)"}>
-    🔍 Diagnóstico Gratis
-  </button>
-</div>
+              <StarBorder size="md" onClick={() => {
+                trackClick("click_cta_consulta", { location: "hero" });
+                setShowModal(true);
+              }}>
+                📋 Consulta Gratuita <ArrowUpRight size={18} />
+              </StarBorder>
+              <button
+                onClick={() => {
+                  trackClick("click_agendar", { location: "hero" });
+                  window.open(GCAL_URL, "_blank");
+                }}
+                style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(139,92,246,0.4)", background: "rgba(109,40,217,0.1)", color: "#c4b5fd", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(168,85,247,0.7)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.4)"}>
+                <Calendar size={18} /> Agendar Reunión
+              </button>
+              <button
+                onClick={() => {
+                  trackClick("click_diagnostico", { location: "hero" });
+                  window.location.href = "/diagnostico";
+                }}
+                style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(34,197,94,0.4)", background: "rgba(34,197,94,0.1)", color: "#86efac", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(34,197,94,0.7)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(34,197,94,0.4)"}>
+                🔍 Diagnóstico Gratis
+              </button>
+            </div>
           </ScrollReveal>
           {/* Stats */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 16, maxWidth: 680, margin: "0 auto" }}>
@@ -441,7 +438,6 @@ export default function LaLiga() {
                   onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.2)"}>
                   <div style={{ fontSize: 30, fontWeight: 900, ...gText, marginBottom: 4 }}>
                     <CountUp end={s.number} />
-                    {s.label.includes("%") && s.number !== "65" ? "" : ""}
                   </div>
                   <p style={{ fontSize: 12, color: "#64748b" }}>{s.label}</p>
                 </div>
@@ -467,7 +463,7 @@ export default function LaLiga() {
               const isActive = activeCase === i;
               return (
                 <ScrollReveal key={i} direction="up" delay={i * 100}>
-                  <div onClick={() => setActiveCase(i)} style={{ ...card({ cursor: "pointer", height: 380, padding: 32, display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden", transition: "all 0.3s", boxShadow: isActive ? "0 0 0 2px rgba(168,85,247,0.5)" : "none", transform: isActive ? "scale(1.02)" : "scale(1)" }), }}
+                  <div onClick={() => setActiveCase(i)} style={{ ...card({ cursor: "pointer", height: 380, padding: 32, display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden", transition: "all 0.3s", boxShadow: isActive ? "0 0 0 2px rgba(168,85,247,0.5)" : "none", transform: isActive ? "scale(1.02)" : "scale(1)" }) }}
                     onMouseMove={e => {
                       const r = e.currentTarget.getBoundingClientRect();
                       const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
@@ -494,7 +490,6 @@ export default function LaLiga() {
       </section>
 
       {/* ── GRID CASOS ── */}
-      {/* ── NUESTROS CLIENTES ── */}
       <section style={{ padding: "80px 24px", borderTop: "1px solid rgba(109,40,217,0.12)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <ScrollReveal>
@@ -681,10 +676,16 @@ export default function LaLiga() {
               30 minutos de consulta gratuita. Sin compromiso. Solo conversación honesta sobre tu negocio.
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
-              <StarBorder color="#ec4899" speed="2.5s" size="lg" onClick={() => setShowModal(true)}>
+              <StarBorder color="#ec4899" speed="2.5s" size="lg" onClick={() => {
+                trackClick("click_cta_consulta", { location: "cta_final" });
+                setShowModal(true);
+              }}>
                 📋 Consulta Gratuita <ArrowUpRight size={20} />
               </StarBorder>
-              <StarBorder color="#7c3aed" speed="3.5s" size="lg" onClick={() => window.open(GCAL_URL, "_blank")}>
+              <StarBorder color="#7c3aed" speed="3.5s" size="lg" onClick={() => {
+                trackClick("click_agendar", { location: "cta_final" });
+                window.open(GCAL_URL, "_blank");
+              }}>
                 <Calendar size={20} /> Agendar Reunión
               </StarBorder>
             </div>
@@ -716,11 +717,19 @@ export default function LaLiga() {
             </div>
             <div>
               <h4 style={{ fontWeight: 700, color: "#e2e8f0", marginBottom: 12, fontSize: 14 }}>Contacto</h4>
-              <button onClick={() => window.open(WA_BASE, "_blank")}
+              <button
+                onClick={() => {
+                  trackClick("click_whatsapp", { location: "footer" });
+                  window.open(WA_BASE, "_blank");
+                }}
                 style={{ display: "flex", alignItems: "center", gap: 6, color: "#22c55e", fontSize: 13, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: 8, fontWeight: 600 }}>
                 <MessageCircle size={14} /> WhatsApp directo
               </button>
-              <button onClick={() => window.open(GCAL_URL, "_blank")}
+              <button
+                onClick={() => {
+                  trackClick("click_agendar", { location: "footer" });
+                  window.open(GCAL_URL, "_blank");
+                }}
                 style={{ display: "flex", alignItems: "center", gap: 6, color: "#a855f7", fontSize: 13, background: "none", border: "none", cursor: "pointer", padding: 0, fontWeight: 600 }}>
                 <Calendar size={14} /> Agendar reunión
               </button>
@@ -733,7 +742,11 @@ export default function LaLiga() {
       </footer>
 
       {/* ── WHATSAPP FLOTANTE ── */}
-      <button onClick={() => window.open(`${WA_BASE}?text=${encodeURIComponent("Hola La Liga! 👋 Me interesa una consulta gratuita.")}`, "_blank")}
+      <button
+        onClick={() => {
+          trackClick("click_whatsapp", { location: "flotante" });
+          window.open(`${WA_BASE}?text=${encodeURIComponent("Hola La Liga! 👋 Me interesa una consulta gratuita.")}`, "_blank");
+        }}
         style={{ position: "fixed", bottom: 28, right: 28, zIndex: 300, width: 60, height: 60, borderRadius: "50%", background: "#25D366", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 32px rgba(37,211,102,0.4)", transition: "transform 0.2s, box-shadow 0.2s", animation: "wapulse 3s ease-in-out infinite" }}
         onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.12)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(37,211,102,0.55)"; }}
         onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(37,211,102,0.4)"; }}>

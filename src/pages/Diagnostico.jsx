@@ -107,19 +107,37 @@ const Diagnostico = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    const simpleReport = await generateHaikuReport(formData);
-    
-    if (simpleReport) {
-      await saveToSupabase(formData, simpleReport);
-      setReport(simpleReport);
-      setStep('report');
-    }
+  // 🔴 AGREGAR ESTO - dataLayer para GTM/Meta
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'lead',
+    event_id: Math.floor(Date.now() / 1000) + '_' + Math.random().toString(36).substr(2, 9),
+    user_name: formData.name,
+    user_email: formData.email,
+    user_phone: formData.phone,
+    user_industry: formData.industry,
+    user_stage: formData.stage,
+    user_revenue: formData.revenue,
+    user_problem: formData.problem,
+    user_budget: formData.budget,
+    user_metric: formData.metric,
+    conversion_value: 0,
+    currency: 'ARS'
+  });
 
-    setLoading(false);
-  };
+  const simpleReport = await generateHaikuReport(formData);
+  
+  if (simpleReport) {
+    await saveToSupabase(formData, simpleReport);
+    setReport(simpleReport);
+    setStep('report');
+  }
+
+  setLoading(false);
+};
 
   const handleContact = () => {
     const msg = encodeURIComponent(`Hola! Completé el diagnóstico y me gustaría una consulta personalizada.\n\nNombre: ${formData.name}\nEmail: ${formData.email}`);
