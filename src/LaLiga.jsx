@@ -34,7 +34,7 @@ function FadeUp({ children, delay = 0, className }) {
   );
 }
 
-const TREATMENTS = ['implantes', 'ortodoncia', 'ATM y bruxismo', 'pacientes particulares'];
+const TREATMENTS = ['implantes', 'ortodoncia', 'bruxismo y ATM', 'particulares'];
 
 function RotatingWord() {
   const [idx, setIdx] = useState(0);
@@ -177,14 +177,23 @@ export default function LaLiga() {
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = async e => {
-  e.preventDefault();
-  if (!form.name || !form.phone) return;
-  const msg = encodeURIComponent(
-    `Hola, soy ${form.name}${form.clinic ? ` de ${form.clinic}` : ''}. Mi WhatsApp es ${form.phone}. ${form.challenge ? `Mi desafío principal: ${form.challenge}.` : ''}`
-  );
-  pushEvent('lead_form_submit', { user_name: form.name, lead_source: 'landing_dental' });
-  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
-};
+    e.preventDefault();
+    if (!form.name || !form.phone) return;
+    setStatus('loading');
+    try {
+      const { error } = await supabase.from('leads').insert([{
+        name: form.name, phone: form.phone,
+        clinic: form.clinic || null, challenge: form.challenge || null,
+        source: 'landing_dental', created_at: new Date().toISOString(),
+      }]);
+      if (error) throw error;
+      pushEvent('lead_form_submit', { user_name: form.name, lead_source: 'landing_dental' });
+      setStatus('success');
+    } catch (err) {
+      console.error(err);
+      setStatus('error');
+    }
+  };
 
   return (
     <div className="llm">
@@ -220,9 +229,9 @@ export default function LaLiga() {
             <motion.h1 className="llm-h1"
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: EASE }}>
-              Conseguimos pacientes<br />
-              para <RotatingWord /><br />
-              en Córdoba.
+              En Córdoba conseguimos<br />
+              pacientes para<br />
+              <RotatingWord />
             </motion.h1>
             <motion.p className="llm-sub"
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}

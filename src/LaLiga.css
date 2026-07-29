@@ -149,15 +149,14 @@
   font-style: normal;
 }
 
-/* Contenedor del texto rotante — evita layout shift */
+/* Contenedor del texto rotante — bloque propio, nada después */
 .llm-rotating-wrap {
-  display: inline-block;
-  position: relative;
-  min-width: 2ch;
+  display: block;
+  min-height: 1.15em;
 }
 
 .llm-rotating-wrap em {
-  display: inline-block;
+  display: inline;
 }
 
 .llm-sub {
