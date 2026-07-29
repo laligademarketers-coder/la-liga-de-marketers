@@ -83,19 +83,46 @@ const BRAND_ICONS = {
     <img src="https://cdn.simpleicons.org/wordpress/21759B" alt="WordPress" width="32" height="32" loading="lazy" />
   ),
   googleads: (
-    <svg viewBox="0 0 24 24" width="32" height="32" aria-label="Google Ads">
-      <path fill="#4285F4" d="M2.461 19.168a3 3 0 01-.005-5.196L14.984 6.9a3 3 0 014.121 1.066l.005.008a3 3 0 01-1.065 4.12L5.517 19.168a3 3 0 01-3.056 0z"/>
-      <circle fill="#FBBC04" cx="3.5" cy="18.5" r="3.5"/>
-      <circle fill="#34A853" cx="20.5" cy="5.5" r="3.5"/>
+    <svg viewBox="0 -13 256 256" width="32" height="32" aria-label="Google Ads">
+      <path d="M5.888 166.405L90.88 20.9c10.796 6.356 65.236 36.484 74.028 42.213L79.916 208.627C70.621 220.907-5.888 185.04 5.888 166.397z" fill="#FBBC04"/>
+      <path d="M250.084 166.402L165.092 20.906C153.21 1.132 127.619-6.054 106.6 5.625 85.582 17.304 79.182 42.462 91.064 63.119l85 145.514c11.882 19.765 37.473 26.95 58.491 15.272 20.1-11.679 27.418-37.729 15.529-57.503z" fill="#4285F4"/>
+      <ellipse fill="#34A853" cx="42.664" cy="187.924" rx="42.664" ry="41.604"/>
     </svg>
   ),
   gmb: (
-    <img src="https://cdn.simpleicons.org/googlebusinessprofile/4285F4" alt="Google Business Profile" width="32" height="32" loading="lazy" />
+    <svg width="32" height="32" viewBox="0 0.43 1064 928.69" aria-label="Google My Business">
+      <defs>
+        <linearGradient id="gmb-grad" x1="0%" x2="99.999%" y1="49.999%" y2="49.999%">
+          <stop offset=".03" stopColor="#4079d8"/>
+          <stop offset="1" stopColor="#4989f5"/>
+        </linearGradient>
+      </defs>
+      <g fill="none" fillRule="evenodd">
+        <g fillRule="nonzero">
+          <rect fill="#4989f5" height="696.14" rx="36.88" width="931" x="53.45" y="232.98"/>
+          <path d="M936.81 227.75H100.06c-25.92 0-46.09 200.6-46.09 226.52L512.2 929.12h424.61c26-.071 47.059-21.13 47.13-47.13V274.87c-.077-25.996-21.134-47.049-47.13-47.12z" fill="url(#gmb-grad)"/>
+          <path d="M266.03 349.56h266V.44H305.86z" fill="#3c4ba6"/>
+          <path d="M798.03 349.56h-266V.44H758.2z" fill="#7babf7"/>
+          <path d="M984.78 67.8l-.33-1.19C976.017 27.993 941.837.455 902.31.43H758.2L798 349.56h266z" fill="#3f51b5"/>
+          <path d="M79.27 67.8l.33-1.19C88.033 27.993 122.213.455 161.74.43h144.12L266 349.56H0z" fill="#7babf7"/>
+        </g>
+        <path d="M266.48 349.47c0 73.412-59.513 132.925-132.925 132.925S.63 422.882.63 349.47z" fill="#709be0"/>
+        <path d="M532.33 349.47c0 73.412-59.513 132.925-132.925 132.925S266.48 422.882 266.48 349.47z" fill="#3c4ba6"/>
+        <path d="M798.18 349.47c0 73.412-59.513 132.925-132.925 132.925S532.33 422.882 532.33 349.47z" fill="#709be0"/>
+        <path d="M1064 349.47c0 73.412-59.513 132.925-132.925 132.925S798.15 422.882 798.15 349.47z" fill="#3c4ba6"/>
+        <path d="M931.08 709.6c-.47-6.33-1.25-12.11-2.36-19.49h-145c0 20.28 0 42.41-.08 62.7h84a73.05 73.05 0 01-30.75 46.89 88 88 0 01-34 13.27 99.85 99.85 0 01-36.79-.16 91.9 91.9 0 01-34.31-14.87 95.72 95.72 0 01-33.73-43.1c-.52-1.35-1-2.71-1.49-4.09a93 93 0 010-59.84A96.27 96.27 0 01718.9 654c23.587-24.399 58.829-33.576 91.32-23.78a83 83 0 0133.23 19.56l28.34-28.34c5-5.05 10.19-9.94 15-15.16a149.78 149.78 0 00-49.64-30.74 156.08 156.08 0 00-103.83-.91 155.18 155.18 0 00-83.82 56.07A152.61 152.61 0 00632.58 689.78c-16.052 79.772 32.623 158.294 111.21 179.4 25.69 6.88 53 6.71 78.89.83a139.88 139.88 0 0063.14-32.81c18.64-17.15 32-40 39-64.27a179 179 0 006.26-63.33z" fill="#fff" fillRule="nonzero"/>
+      </g>
+    </svg>
   ),
   gtm: (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'center' }}>
-      <img src="https://cdn.simpleicons.org/googletagmanager/246FDB" alt="GTM" width="26" height="26" loading="lazy" />
-      <img src="https://cdn.simpleicons.org/googleanalytics/E37400" alt="GA4" width="26" height="26" loading="lazy" />
+      <svg viewBox="0 0 256 256" width="26" height="26" aria-label="Google Tag Manager">
+        <polygon fill="#8AB4F8" points="150.26,245.52 105.83,202.19 201.26,104.73 247.27,149.82"/>
+        <path d="M150.45 53.94L106.17 8.73 9.36 104.63C-3.12 117.11-3.12 137.34 9.36 149.84L104.72 245.82l45.09-42.18-72.65-76.41z" fill="#4285F4"/>
+        <path d="M246.63 105.37L150.63 9.37c-12.49-12.49-32.76-12.49-45.25 0-12.49 12.49-12.49 32.76 0 45.25l96 96c12.49 12.49 32.76 12.49 45.25 0 12.49-12.49 12.49-32.76 0-45.25z" fill="#8AB4F8"/>
+        <circle fill="#246FDB" cx="127.27" cy="224.73" r="31.27"/>
+      </svg>
+      <img src="https://cdn.simpleicons.org/googleanalytics/E37400" alt="GA4" width="26" height="26" loading="lazy"/>
     </div>
   ),
   meta: (
