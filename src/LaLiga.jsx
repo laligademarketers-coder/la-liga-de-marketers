@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 import './LaLiga.css';
 
-
 const WA_NUMBER = '5493512033845';
 const WA_MSG = encodeURIComponent('Hola, quiero saber cómo conseguir más pacientes particulares para mi clínica dental');
 const WA_URL = `https://wa.me/${WA_NUMBER}?text=${WA_MSG}`;
@@ -176,15 +175,15 @@ export default function LaLiga() {
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async e => {
-  e.preventDefault();
-  if (!form.name || !form.phone) return;
-  const msg = encodeURIComponent(
-    `Hola, soy ${form.name}${form.clinic ? ` de ${form.clinic}` : ''}. Mi WhatsApp es ${form.phone}. ${form.challenge ? `Mi desafío principal: ${form.challenge}.` : ''}`
-  );
-  pushEvent('lead_form_submit', { user_name: form.name, lead_source: 'landing_dental' });
-  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
-};
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (!form.name || !form.phone) return;
+    const msg = encodeURIComponent(
+      `Hola, soy ${form.name}${form.clinic ? ` de ${form.clinic}` : ''}. Mi WhatsApp es ${form.phone}.${form.challenge ? ` Desafío: ${form.challenge}.` : ''}`
+    );
+    pushEvent('lead_form_submit', { user_name: form.name, lead_source: 'landing_dental' });
+    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+  };
 
   return (
     <div className="llm">
@@ -220,9 +219,8 @@ export default function LaLiga() {
             <motion.h1 className="llm-h1"
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: EASE }}>
-              En Córdoba conseguimos<br />
-              pacientes para<br />
-              <RotatingWord />
+              Llenamos tu agenda<br />
+              de <RotatingWord />
             </motion.h1>
             <motion.p className="llm-sub"
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
