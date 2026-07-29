@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import './LaLiga.css';
 
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
 const WA_NUMBER = '5493512033845';
