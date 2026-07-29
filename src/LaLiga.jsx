@@ -83,15 +83,19 @@ const BRAND_ICONS = {
     <img src="https://cdn.simpleicons.org/wordpress/21759B" alt="WordPress" width="32" height="32" loading="lazy" />
   ),
   googleads: (
-    <img src="https://cdn.simpleicons.org/googleads/4285F4" alt="Google Ads" width="32" height="32" loading="lazy" />
+    <svg viewBox="0 0 24 24" width="32" height="32" aria-label="Google Ads">
+      <path fill="#4285F4" d="M2.461 19.168a3 3 0 01-.005-5.196L14.984 6.9a3 3 0 014.121 1.066l.005.008a3 3 0 01-1.065 4.12L5.517 19.168a3 3 0 01-3.056 0z"/>
+      <circle fill="#FBBC04" cx="3.5" cy="18.5" r="3.5"/>
+      <circle fill="#34A853" cx="20.5" cy="5.5" r="3.5"/>
+    </svg>
   ),
   gmb: (
-    <img src="https://cdn.simpleicons.org/googlemybusiness/4285F4" alt="Google My Business" width="32" height="32" loading="lazy" />
+    <img src="https://cdn.simpleicons.org/googlebusinessprofile/4285F4" alt="Google Business Profile" width="32" height="32" loading="lazy" />
   ),
   gtm: (
-    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-      <img src="https://cdn.simpleicons.org/googletagmanager/246FDB" alt="GTM" width="14" height="14" loading="lazy" />
-      <img src="https://cdn.simpleicons.org/googleanalytics/E37400" alt="GA4" width="14" height="14" loading="lazy" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'center' }}>
+      <img src="https://cdn.simpleicons.org/googletagmanager/246FDB" alt="GTM" width="26" height="26" loading="lazy" />
+      <img src="https://cdn.simpleicons.org/googleanalytics/E37400" alt="GA4" width="26" height="26" loading="lazy" />
     </div>
   ),
   meta: (
