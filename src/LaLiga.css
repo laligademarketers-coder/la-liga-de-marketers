@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 /* ─────────────────────────────────────────────
    TOKENS
@@ -57,8 +57,8 @@
 }
 
 .llm-logo {
-  font-family: 'Anton', sans-serif;
-  font-weight: 400;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
   font-size: 1rem;
   color: var(--v);
   text-decoration: none;
@@ -129,18 +129,17 @@
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  
   color: var(--v);
   margin-bottom: 1rem;
 }
 
 .llm-h1 {
-  font-family: 'Anton', sans-serif;
-  font-size: clamp(2.4rem, 4vw, 3.6rem);
-  font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--gray-900);
   margin-bottom: 1.25rem;
 }
@@ -233,11 +232,11 @@
 
 .llm-agenda-label {
   padding: 0.6rem 1rem;
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  
   text-align: center;
   border-bottom: 1px solid var(--gray-200);
 }
@@ -280,7 +279,7 @@
 .llm-slot-time {
   display: block;
   font-size: 0.65rem;
-  font-weight: 400;
+  font-weight: 700;
   opacity: 0.6;
   margin-bottom: 0.1rem;
 }
@@ -294,11 +293,11 @@
    SECTION SHARED
 ───────────────────────────────────────────── */
 .llm-h2 {
-  font-family: 'Anton', sans-serif;
-  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: 0.01em; text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--gray-900);
   margin-bottom: 2rem;
 }
@@ -311,7 +310,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  
   color: var(--v);
   margin-bottom: 0.75rem;
 }
@@ -352,9 +351,9 @@
 }
 
 .llm-metric-num {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2.25rem;
-  font-weight: 400;
+  font-weight: 700;
   color: var(--purple-200);
   line-height: 1;
 }
@@ -382,7 +381,7 @@
 }
 
 .llm-breakdown-val {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: white;
@@ -435,7 +434,7 @@
 }
 
 .llm-pain-title {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--gray-900);
@@ -482,11 +481,11 @@
 }
 
 .llm-roi-card-title {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: 1.5rem;
 }
@@ -522,9 +521,9 @@
 }
 
 .llm-roi-highlight {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2.25rem;
-  font-weight: 400;
+  font-weight: 700;
   color: var(--purple-200);
 }
 
@@ -558,16 +557,16 @@
 
 .llm-how-num {
   display: block;
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 2rem;
-  font-weight: 400;
+  font-weight: 700;
   color: var(--v-light);
   margin-bottom: 0.875rem;
   line-height: 1;
 }
 
 .llm-how-title {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--gray-900);
@@ -621,7 +620,7 @@
 }
 
 .llm-beyond-index {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -630,7 +629,7 @@
 }
 
 .llm-beyond-title {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--gray-900);
@@ -759,7 +758,7 @@
   padding: 1rem;
   border: none;
   border-radius: 8px;
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -808,7 +807,7 @@
 }
 
 .llm-footer strong {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   color: var(--purple-200);
   font-weight: 700;
   display: block;
@@ -951,7 +950,7 @@
 }
 
 .llm-eco-title {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--gray-900);
@@ -973,11 +972,11 @@
 }
 
 .llm-eco-no-label {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  
   color: var(--gray-500);
   margin-bottom: 0.875rem;
 }
@@ -1052,7 +1051,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+  
   color: var(--v);
 }
 
@@ -1061,9 +1060,9 @@
 }
 
 .llm-tl-titulo {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.05rem;
-  font-weight: 400;
+  font-weight: 700;
   color: var(--gray-900);
 }
 
@@ -1102,7 +1101,7 @@
 .llm-tl-semana-label {
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
+  
   letter-spacing: 0.08em;
   color: var(--v);
 }
@@ -1155,16 +1154,16 @@
 
 .llm-kpi-num {
   display: block;
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.75rem;
-  font-weight: 400;
+  font-weight: 700;
   color: var(--v-light);
   line-height: 1;
   margin-bottom: 0.75rem;
 }
 
 .llm-kpi-label {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--gray-900);
@@ -1211,17 +1210,17 @@
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  
   color: var(--purple-200);
   margin-bottom: 1.25rem;
 }
 
 .llm-garantia-titulo {
-  font-family: 'Anton', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: clamp(1.6rem, 3vw, 2.25rem);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.15;
-  letter-spacing: 0.01em; text-transform: uppercase;
+  letter-spacing: 0.01em; 
   color: white;
   margin-bottom: 1.5rem;
 }
