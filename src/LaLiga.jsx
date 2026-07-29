@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
-import { createClient } from '@supabase/supabase-js';
 import './LaLiga.css';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 const WA_NUMBER = '5493512033845';
 const WA_MSG = encodeURIComponent(
@@ -154,23 +148,14 @@ export default function LaLiga() {
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = async e => {
-    e.preventDefault();
-    if (!form.name || !form.phone) return;
-    setStatus('loading');
-    try {
-      const { error } = await supabase.from('leads').insert([{
-        name: form.name, phone: form.phone,
-        clinic: form.clinic || null, challenge: form.challenge || null,
-        source: 'landing_dental', created_at: new Date().toISOString(),
-      }]);
-      if (error) throw error;
-      pushEvent('lead_form_submit', { user_name: form.name, user_phone: form.phone, lead_source: 'landing_dental' });
-      setStatus('success');
-    } catch (err) {
-      console.error('Form error:', err);
-      setStatus('error');
-    }
-  };
+  e.preventDefault();
+  if (!form.name || !form.phone) return;
+  const msg = encodeURIComponent(
+    `Hola, soy ${form.name}${form.clinic ? ` de ${form.clinic}` : ''}. Mi WhatsApp es ${form.phone}. ${form.challenge ? `Mi desafío principal: ${form.challenge}.` : ''}`
+  );
+  pushEvent('lead_form_submit', { user_name: form.name, lead_source: 'landing_dental' });
+  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+};
 
   return (
     <div className="llm">
