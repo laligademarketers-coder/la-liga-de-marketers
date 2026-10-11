@@ -5,3 +5,6 @@ build/
 dist/
 .vercel
 .next
+.claude/
+.env*.local
+mockup/

@@ -4,15 +4,14 @@ import App from './App';
 import './index.css';
 
 // Load Meta Pixel
-window.fbq = window.fbq || function() { 
+window.fbq = window.fbq || function() {
   window.fbq.queue = window.fbq.queue || [];
   window.fbq.queue.push(arguments);
 };
 window.fbq('init', '1265283559068729');
 window.fbq('track', 'PageView');
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
