@@ -360,3 +360,26 @@ footer a:hover{color:var(--ink)}
 .closing .btn-wa{white-space:normal;text-align:left;margin-top:0}
 .is-static .closing-q .w{opacity:1}
 @media (max-width:860px){#s-frase{padding:12vh 16px}.closing-q{font-size:30px}}
+
+/* ── Fixes mobile (oct-2026) ── */
+.agenda-legend{display:none}
+.cell .face{overflow:hidden;overflow-wrap:anywhere;hyphens:auto}
+.contact{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.form input,.form select{width:100%;min-width:0;box-sizing:border-box}
+
+@media (max-width:860px){
+  /* agenda: solo el tratamiento; el color + la referencia dicen que es particular */
+  .cell .back .p{display:none}
+  .cell .face{font-size:8.5px;line-height:1.15;padding:4px;align-items:center;justify-content:center;text-align:center}
+  .agenda-legend{display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;color:var(--muted);margin-top:-4px}
+  .agenda-legend i{width:12px;height:12px;border-radius:3px}
+  .agenda-legend i + *,.agenda-legend i{flex-shrink:0}
+  .agenda-legend .l-part{background:linear-gradient(135deg,var(--v2) 50%,var(--gold) 50%)}
+  .agenda-legend .l-os{background:var(--os);margin-left:10px}
+
+  /* contacto centrado, el formulario no se sale de la pantalla */
+  .contact{grid-template-columns:minmax(0,1fr);gap:36px;text-align:center}
+  .contact .lead{margin-left:auto;margin-right:auto}
+  .contact .btn-wa.lg{justify-content:center}
+  .form{text-align:left;width:100%}
+}

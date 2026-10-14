@@ -209,9 +209,17 @@ function setupMachine(root, reduce) {
     W = cv.clientWidth || innerWidth; H = cv.clientHeight || innerHeight;
     cv.width = W * DPR; cv.height = H * DPR;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    const pos = W < 860
-      ? { gads: [0.2, 0.27], meta: [0.5, 0.27], gmb: [0.8, 0.27], web: [0.5, 0.43], wa: [0.5, 0.57], turno: [0.5, 0.7] }
-      : { gads: [0.18, 0.36], meta: [0.18, 0.54], gmb: [0.18, 0.72], web: [0.44, 0.54], wa: [0.65, 0.54], turno: [0.86, 0.54] };
+    // En celular el recorrido es vertical y se acomoda entre el texto de arriba y los contadores de abajo,
+    // midiéndolos: con porcentajes fijos los íconos chocaban con el título en pantallas bajas.
+    let pos;
+    if (W < 860) {
+      const copy = sec.querySelector('.m-copy'), hud = sec.querySelector('.m-hud');
+      const copyBottom = copy.offsetTop + Math.max(...Array.from(copy.children, c => c.offsetHeight));
+      const top = (copyBottom + 52) / H, bottom = (hud.offsetTop - 64) / H, span = bottom - top;
+      pos = { gads: [0.2, top], meta: [0.5, top], gmb: [0.8, top], web: [0.5, top + span * 0.36], wa: [0.5, top + span * 0.68], turno: [0.5, bottom] };
+    } else {
+      pos = { gads: [0.18, 0.36], meta: [0.18, 0.54], gmb: [0.18, 0.72], web: [0.44, 0.54], wa: [0.65, 0.54], turno: [0.86, 0.54] };
+    }
     for (const k in pos) {
       nodes[k].x = pos[k][0] * W; nodes[k].y = pos[k][1] * H;
       nodes[k].el.style.left = nodes[k].x + 'px'; nodes[k].el.style.top = nodes[k].y + 'px';
@@ -331,7 +339,9 @@ function setupGuarantee(root) {
   const q = s => scene.querySelector(s), qa = s => Array.from(scene.querySelectorAll(s));
   const tl = gsap.timeline({ scrollTrigger: { trigger: '#s-garantia', start: 'top top', end: '+=200%', pin: true, scrub: 1 } });
   const bars = qa('.g-bar');
-  tl.from(qa('.g-text > *'), { y: 40, opacity: 0, stagger: 0.12, duration: 0.35 });
+  // el título entra antes del pin (al acercarse la sección); recién después aparecen los meses
+  gsap.from(qa('.g-text > *'), { y: 40, opacity: 0, stagger: 0.12, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: '#s-garantia', start: 'top 75%' } });
+  tl.from(q('.g-months'), { y: 50, opacity: 0, duration: 0.3 });
   bars.forEach((b, i) => {
     const v = +b.dataset.v, c = { n: 0 }, label = b.querySelector('b');
     tl.fromTo(b.querySelector('i'), { height: '0%' }, { height: b.dataset.h, duration: 0.35, ease: 'none' }, 0.3 + i * 0.35)

@@ -40,7 +40,7 @@ function Agenda({ id, mode }) {
                   <div className={`face front ${cell.before}`}>{cell.before === 'empty' ? 'Sin turno' : 'Obra social'}</div>
                   {mode === 'after' && (cell.after === 'os'
                     ? <div className="face back os">Obra social</div>
-                    : <div className={`face back ${cell.after === 'gold' ? 'gold' : ''}`}>{cell.treatment} · Particular</div>)}
+                    : <div className={`face back ${cell.after === 'gold' ? 'gold' : ''}`}>{cell.treatment}<span className="p"> · Particular</span></div>)}
                 </div>
               </div>
             );
@@ -258,6 +258,7 @@ export default function Landing() {
           <div className="scene">
             <div className="f-head"><span className="kicker">Martes · 18:30</span><h2 className="display">Así se ve tu agenda<br />con La Liga</h2></div>
             <Agenda id="agenda-liga" mode="after" />
+            <p className="agenda-legend" aria-hidden="true"><i className="l-part" />Paciente particular<i className="l-os" />Obra social</p>
             <div className="f-cta">
               <WaLink location="final">Quiero más pacientes particulares</WaLink>
               <p>Llamada de 30 minutos, sin costo ni compromiso.</p>
