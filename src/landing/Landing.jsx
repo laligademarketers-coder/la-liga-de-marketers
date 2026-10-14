@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   RESULTS, WA_URL, WA_NUMBER, WA_PHONE_LABEL, PAINS, SEARCH_LINES, NODES, TIMELINE,
   EXTRAS, CLOSING, NOT_INCLUDED, CHALLENGES, DAYS, HOURS, AGENDA,
@@ -8,6 +8,8 @@ import { initStory } from './story';
 import './landing.css';
 
 const fmt = n => n.toLocaleString('es-AR');
+// useLayoutEffect en el navegador; en el prerender (Node) no hace nada y no emite avisos
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 const WhatsAppIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -85,7 +87,7 @@ function ContactForm() {
 export default function Landing() {
   const root = useRef(null);
 
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     document.body.classList.add('is-landing');
     const destroy = initStory(root.current);
     return () => { destroy(); document.body.classList.remove('is-landing'); };
@@ -111,11 +113,11 @@ export default function Landing() {
         {/* 0 · HERO */}
         <section id="s-hero" data-chapter="09:00">
           <div className="scene">
-            <div className="intro"><p className="kicker hero-k">Martes · Un consultorio dental en Córdoba</p></div>
+            <div className="intro"><h1 className="kicker hero-k">Marketing odontológico en Córdoba</h1></div>
             <div className="intro">
-              <h1 className="hero-time display" aria-label="Llenamos tu agenda de pacientes particulares">
-                <span aria-hidden="true">09</span><span className="colon" aria-hidden="true">:</span><span aria-hidden="true">00</span>
-              </h1>
+              <div className="hero-time display" aria-hidden="true">
+                <span>09</span><span className="colon">:</span><span>00</span>
+              </div>
             </div>
             <div className="intro">
               <p className="hero-line">El teléfono <b>no suena.</b></p>

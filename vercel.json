@@ -3,7 +3,9 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "redirects": [
+    { "source": "/diagnostico", "destination": "/", "permanent": true },
+    { "source": "/dashboard-diagnosticos", "destination": "/", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true }
   ]
 }

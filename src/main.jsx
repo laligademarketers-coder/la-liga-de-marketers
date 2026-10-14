@@ -11,8 +11,13 @@ window.fbq = window.fbq || function() {
 window.fbq('init', '1265283559068729');
 window.fbq('track', 'PageView');
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const app = (
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+const container = document.getElementById('root');
+// En producción el HTML ya viene prerenderizado (scripts/prerender.mjs): React lo hidrata.
+// En desarrollo el contenedor llega vacío y se renderiza desde cero.
+if (container.hasChildNodes()) ReactDOM.hydrateRoot(container, app);
+else ReactDOM.createRoot(container).render(app);

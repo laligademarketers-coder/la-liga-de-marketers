@@ -8,3 +8,4 @@ dist/
 .claude/
 .env*.local
 mockup/
+dist-ssr/
