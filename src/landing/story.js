@@ -213,10 +213,12 @@ function setupMachine(root, reduce) {
     // midiéndolos: con porcentajes fijos los íconos chocaban con el título en pantallas bajas.
     let pos;
     if (W < 860) {
+      // (en celular las etiquetas de web/whatsapp/turno van al costado, así cada nodo ocupa solo su ícono)
       const copy = sec.querySelector('.m-copy'), hud = sec.querySelector('.m-hud');
       const copyBottom = copy.offsetTop + Math.max(...Array.from(copy.children, c => c.offsetHeight));
-      const top = (copyBottom + 52) / H, bottom = (hud.offsetTop - 64) / H, span = bottom - top;
-      pos = { gads: [0.2, top], meta: [0.5, top], gmb: [0.8, top], web: [0.5, top + span * 0.36], wa: [0.5, top + span * 0.68], turno: [0.5, bottom] };
+      const iconH = nodes.gads.el.querySelector('.ic').offsetHeight, turnoH = nodes.turno.el.querySelector('.ic').offsetHeight;
+      const top = (copyBottom + 28 + iconH / 2) / H, bottom = (hud.offsetTop - 18 - turnoH / 2) / H, span = bottom - top;
+      pos = { gads: [0.2, top], meta: [0.5, top], gmb: [0.8, top], web: [0.5, top + span * 0.4], wa: [0.5, top + span * 0.7], turno: [0.5, bottom] };
     } else {
       pos = { gads: [0.18, 0.36], meta: [0.18, 0.54], gmb: [0.18, 0.72], web: [0.44, 0.54], wa: [0.65, 0.54], turno: [0.86, 0.54] };
     }

@@ -383,3 +383,12 @@ footer a:hover{color:var(--ink)}
   .contact .btn-wa.lg{justify-content:center}
   .form{text-align:left;width:100%}
 }
+
+@media (max-width:860px){
+  /* máquina en celular: etiquetas del recorrido central al costado del ícono */
+  .m-node[data-k="web"] .lb,.m-node[data-k="wa"] .lb,.m-node.turno .lb{position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);text-align:left}
+  .m-node[data-k="web"],.m-node[data-k="wa"],.m-node.turno{gap:0}
+  .m-copy .step p:not(.kicker){display:none}
+  .m-copy h2{font-size:26px}
+  .m-hud{gap:6px 28px}.m-hud b{font-size:24px}
+}
