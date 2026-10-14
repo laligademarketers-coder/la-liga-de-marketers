@@ -156,7 +156,7 @@ export function initStory(root) {
       }));
     }
 
-    // ─── 6 · Garantía (3 propuestas) ───
+    // ─── 6 · Garantía ───
     setupGuarantee(root);
 
     // ─── 7 · La agenda, ahora llena ───
@@ -167,6 +167,10 @@ export function initStory(root) {
       .to('.f-cta', { opacity: 1, y: 0, duration: 0.3 }, 1.6);
 
     gsap.from('.contact > *', { y: 50, opacity: 0, duration: 1, stagger: 0.12, ease: 'expo.out', scrollTrigger: { trigger: '.contact', start: 'top 80%' } });
+
+    // ─── Cierre: la frase se enciende palabra por palabra ───
+    gsap.to('.closing-q .w', { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: '.closing-q', start: 'top 85%', end: 'bottom 45%', scrub: true } });
+    gsap.from('.closing .btn-wa', { y: 30, opacity: 0, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: '.closing .btn-wa', start: 'top 92%' } });
 
     // ─── Capítulos (después de los pins, para que midan bien) ───
     const nav = $('.chapters');
@@ -181,11 +185,7 @@ export function initStory(root) {
   }, root);
 
   // Fuentes y logos cambian medidas: re-medir cuando estén listos
-  document.fonts?.ready.then(() => {
-    ScrollTrigger.refresh();
-    const target = location.hash && root.querySelector(location.hash);
-    if (target) lenis ? lenis.scrollTo(target, { immediate: true }) : target.scrollIntoView();
-  });
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
   return () => {
     ctx.revert();
@@ -325,58 +325,22 @@ function setupScrollHint(root) {
   return () => { removeEventListener('scroll', arm); clearTimeout(idle); };
 }
 
-/** Garantía: cada propuesta tiene su propia coreografía, todas pineadas y controladas por scroll. */
+/** Garantía: 3 meses de barras; el 3º no llega a la meta → el mes 4 se da vuelta y queda en $0. */
 function setupGuarantee(root) {
   const scene = root.querySelector('.g-scene');
   const q = s => scene.querySelector(s), qa = s => Array.from(scene.querySelectorAll(s));
   const tl = gsap.timeline({ scrollTrigger: { trigger: '#s-garantia', start: 'top top', end: '+=200%', pin: true, scrub: 1 } });
-
-  if (scene.dataset.variant === 'medidor') {
-    // 20 segmentos = 20 turnos que se van encendiendo
-    const segs = qa('.seg'), num = q('.g-num'), meter = q('.g-meter');
-    const c = { n: 0 };
-    num.textContent = '0';
-    tl.from(meter, { scale: 0.75, opacity: 0, duration: 0.4 })
-      .from(qa('.g-text > *'), { y: 40, opacity: 0, stagger: 0.12, duration: 0.4 }, 0.1)
-      .to(c, {
-        n: segs.length, duration: 1.4, ease: 'none',
-        onUpdate: () => {
-          const k = Math.round(c.n);
-          num.textContent = k;
-          segs.forEach((s, i) => s.classList.toggle('on', i < k));
-          meter.classList.toggle('full', k >= segs.length);
-        },
-      }, 0.4)
-      .to({}, { duration: 0.5 });
-  }
-
-  if (scene.dataset.variant === 'contrato') {
-    // la cláusula se lee palabra por palabra, se resalta y se firma
-    const path = q('.g-sign path'), len = path.getTotalLength();
-    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
-    tl.from(q('.g-paper'), { y: 90, rotation: -2, opacity: 0, duration: 0.4 })
-      .to(qa('.g-clause .w'), { opacity: 1, stagger: 0.05, duration: 0.1, ease: 'none' }, 0.3)
-      .to(q('.g-clause mark'), { backgroundSize: '100% 100%', color: '#2a1d00', duration: 0.35 })
-      .from(q('.g-paper .g-note'), { opacity: 0, y: 20, duration: 0.25 })
-      .to(path, { strokeDashoffset: 0, duration: 0.7, ease: 'none' })
-      .from(q('.g-paper footer span'), { opacity: 0, duration: 0.2 }, '<0.4')
-      .to({}, { duration: 0.3 });
-  }
-
-  if (scene.dataset.variant === 'meses') {
-    // 3 meses de barras; el 3º no llega a la meta → el mes 4 se da vuelta y queda en $0
-    const bars = qa('.g-bar');
-    tl.from(qa('.g-text > *'), { y: 40, opacity: 0, stagger: 0.12, duration: 0.35 });
-    bars.forEach((b, i) => {
-      const v = +b.dataset.v, c = { n: 0 }, label = b.querySelector('b');
-      tl.fromTo(b.querySelector('i'), { height: '0%' }, { height: b.dataset.h, duration: 0.35, ease: 'none' }, 0.3 + i * 0.35)
-        .to(c, { n: v, duration: 0.35, ease: 'none', onUpdate: () => (label.textContent = Math.round(c.n)) }, '<');
-    });
-    tl.to(bars[2].querySelector('i'), { backgroundImage: 'linear-gradient(180deg, #ff8a98, #b8394f)', duration: 0.1 }, 1.45)
-      .to(q('.g-cond .a'), { opacity: 1, duration: 0.15 }, 1.45)
-      .to(q('.g-bill'), { rotationY: 180, duration: 0.4, ease: 'power2.inOut' }, 1.7)
-      .to(q('.g-cond .a'), { opacity: 0, duration: 0.1 }, 2.15)
-      .to(q('.g-cond .b'), { opacity: 1, duration: 0.15 }, 2.2)
-      .to({}, { duration: 0.3 });
-  }
+  const bars = qa('.g-bar');
+  tl.from(qa('.g-text > *'), { y: 40, opacity: 0, stagger: 0.12, duration: 0.35 });
+  bars.forEach((b, i) => {
+    const v = +b.dataset.v, c = { n: 0 }, label = b.querySelector('b');
+    tl.fromTo(b.querySelector('i'), { height: '0%' }, { height: b.dataset.h, duration: 0.35, ease: 'none' }, 0.3 + i * 0.35)
+      .to(c, { n: v, duration: 0.35, ease: 'none', onUpdate: () => (label.textContent = Math.round(c.n)) }, '<');
+  });
+  tl.to(bars[2].querySelector('i'), { backgroundImage: 'linear-gradient(180deg, #ff8a98, #b8394f)', duration: 0.1 }, 1.45)
+    .to(q('.g-cond .a'), { opacity: 1, duration: 0.15 }, 1.45)
+    .to(q('.g-bill'), { rotationY: 180, duration: 0.4, ease: 'power2.inOut' }, 1.7)
+    .to(q('.g-cond .a'), { opacity: 0, duration: 0.1 }, 2.15)
+    .to(q('.g-cond .b'), { opacity: 1, duration: 0.15 }, 2.2)
+    .to({}, { duration: 0.3 });
 }

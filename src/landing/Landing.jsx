@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import {
   RESULTS, WA_URL, WA_NUMBER, WA_PHONE_LABEL, PAINS, SEARCH_LINES, NODES, TIMELINE,
-  EXTRAS, NOT_INCLUDED, CHALLENGES, DAYS, HOURS, AGENDA,
+  EXTRAS, CLOSING, NOT_INCLUDED, CHALLENGES, DAYS, HOURS, AGENDA,
 } from './data';
 import { pushEvent } from './tracking';
 import { initStory } from './story';
@@ -275,6 +275,16 @@ export default function Landing() {
             <ContactForm />
           </div>
         </section>
+        {/* CIERRE · la frase de la propuesta */}
+        <section id="s-frase" data-chapter="Final">
+          <div className="closing">
+            <p className="closing-q">
+              {CLOSING.text.split(' ').map((w, i) => <span className="w" key={`t${i}`}>{w} </span>)}
+              {CLOSING.highlight.split(' ').map((w, i) => <span className="w hl" key={`h${i}`}>{w} </span>)}
+            </p>
+            <WaLink location="closing" className="btn-wa lg">Que tu competencia no se quede con tus pacientes</WaLink>
+          </div>
+        </section>
       </main>
 
       <footer>
@@ -344,102 +354,40 @@ function FlipCard({ n, title, text }) {
   );
 }
 
-// ─── Garantía: 3 propuestas. Se eligen con ?garantia=medidor|contrato|meses ───
-export const GUARANTEE_VARIANTS = [
-  { id: 'medidor', label: 'A · Medidor' },
-  { id: 'contrato', label: 'B · Contrato' },
-  { id: 'meses', label: 'C · Los 4 meses' },
-];
-function guaranteeVariant() {
-  const param = new URLSearchParams(window.location.search).get('garantia');
-  return GUARANTEE_VARIANTS.some(v => v.id === param) ? param : 'medidor';
-}
-
+// ─── Garantía: los 4 meses ───
 const G_CLAUSE = `Si al mes 3 no llegamos a ${RESULTS.metaTurnosMes} turnos agendados por mes de pacientes calificados,`;
 const G_NOTE = 'Nosotros traemos el paciente calificado. Que agende y se trate depende de cómo lo atienden en la clínica, por eso trabajamos juntos el flujo de atención desde el día 1.';
 
 function Guarantee() {
-  const variant = guaranteeVariant();
-  const comparing = new URLSearchParams(window.location.search).has('garantia');
   const meta = RESULTS.metaTurnosMes;
   return (
-    <div className={`scene g-scene g-${variant}`} data-variant={variant}>
-      {variant === 'medidor' && (
-        <div className="g-wrap">
-          <div className="g-meter" aria-hidden="true">
-            <svg viewBox="0 0 220 220">
-              {Array.from({ length: meta }, (_, i) => {
-                const a0 = (i / meta) * 2 * Math.PI - Math.PI / 2 + 0.035;
-                const a1 = ((i + 1) / meta) * 2 * Math.PI - Math.PI / 2 - 0.035;
-                const p = a => `${110 + 96 * Math.cos(a)} ${110 + 96 * Math.sin(a)}`;
-                return <path key={i} className="seg" d={`M ${p(a0)} A 96 96 0 0 1 ${p(a1)}`} />;
-              })}
-            </svg>
-            <div className="g-center"><b className="g-num display">0</b><span>turnos al mes</span></div>
-            <i className="g-check">✓</i>
-          </div>
-          <div className="g-text">
-            <p className="kicker">Nuestra garantía</p>
-            <h2 className="g-copy">{G_CLAUSE} <em>el mes 4 no se cobra.</em></h2>
-            <p className="g-note">{G_NOTE}</p>
-          </div>
+    <div className="scene g-scene">
+      <div className="g-wrap col">
+        <div className="g-text center">
+          <p className="kicker">Nuestra garantía</p>
+          <h2 className="g-copy">{G_CLAUSE} <em>el mes 4 no se cobra.</em></h2>
         </div>
-      )}
-
-      {variant === 'contrato' && (
-        <article className="g-paper">
-          <header><span>Cláusula de garantía</span><span>La Liga de Marketers</span></header>
-          <h2 className="g-clause">
-            {G_CLAUSE.split(' ').map((w, i) => <span className="w" key={i}>{w} </span>)}
-            <mark>el mes 4 no se cobra.</mark>
-          </h2>
-          <p className="g-note">{G_NOTE}</p>
-          <footer>
-            <svg className="g-sign" viewBox="0 0 320 90" aria-hidden="true">
-              <path d="M12 62 C 28 18, 50 16, 54 54 S 72 82, 88 42 S 112 10, 117 50 S 134 76, 152 44 C 166 22, 178 30, 172 56 C 169 72, 192 62, 206 40 S 236 26, 242 54 S 274 72, 308 28" />
-            </svg>
-            <span>Firma · La Liga de Marketers · Córdoba</span>
-          </footer>
-        </article>
-      )}
-
-      {variant === 'meses' && (
-        <div className="g-wrap col">
-          <div className="g-text center">
-            <p className="kicker">Nuestra garantía</p>
-            <h2 className="g-copy">{G_CLAUSE} <em>el mes 4 no se cobra.</em></h2>
-          </div>
-          <div className="g-months" aria-hidden="true">
-            <div className="g-goal"><span>Meta · {meta} turnos/mes</span></div>
-            {/* valores ilustrativos: el mes 3 queda corto a propósito para mostrar cómo actúa la garantía */}
-            {[6, 13, 16].map((v, i) => {
-              const h = `${(v / (meta * 1.25)) * 100}%`; // la meta queda al 80% de la altura
-              return (
-                <div className="g-month" key={i}>
-                  <div className="g-bar" data-v={v} data-h={h}><i style={{ height: h }}><b>{v}</b></i></div><span>Mes {i + 1}</span>
-                </div>
-              );
-            })}
-            <div className="g-month m4">
-              <div className="g-bill">
-                <span className="cobra">Se cobra</span>
-                <span className="free"><b>$0</b>no se cobra</span>
+        <div className="g-months" aria-hidden="true">
+          <div className="g-goal"><span>Meta · {meta} turnos/mes</span></div>
+          {/* valores ilustrativos: el mes 3 queda corto a propósito para mostrar cómo actúa la garantía */}
+          {[6, 13, 16].map((v, i) => {
+            const h = `${(v / (meta * 1.25)) * 100}%`; // la meta queda al 80% de la altura
+            return (
+              <div className="g-month" key={i}>
+                <div className="g-bar" data-v={v} data-h={h}><i style={{ height: h }}><b>{v}</b></i></div><span>Mes {i + 1}</span>
               </div>
-              <span>Mes 4</span>
+            );
+          })}
+          <div className="g-month m4">
+            <div className="g-bill">
+              <span className="cobra">Se cobra</span>
+              <span className="free"><b>$0</b>no se cobra</span>
             </div>
+            <span>Mes 4</span>
           </div>
-          <p className="g-cond"><span className="a">Ejemplo: ¿y si al mes 3 no llegamos a la meta?</span><span className="b">{G_NOTE}</span></p>
         </div>
-      )}
-
-      {comparing && (
-        <nav className="g-switch" aria-label="Opciones de garantía">
-          {GUARANTEE_VARIANTS.map(v => (
-            <a key={v.id} className={v.id === variant ? 'on' : ''} href={`?garantia=${v.id}#s-garantia`}
-              onClick={e => { e.stopPropagation(); e.preventDefault(); window.location.href = `?garantia=${v.id}#s-garantia`; }}>{v.label}</a>
-          ))}
-        </nav>
-      )}
+        <p className="g-cond"><span className="a">Ejemplo: ¿y si al mes 3 no llegamos a la meta?</span><span className="b">{G_NOTE}</span></p>
+      </div>
     </div>
   );
 }

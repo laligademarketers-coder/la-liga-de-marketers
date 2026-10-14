@@ -51,6 +51,12 @@ export const EXTRAS = [
   { title: 'Oferta clara por tratamiento', text: 'Materiales, proceso, tiempos y precio. El paciente particular necesita entender qué paga.' },
 ];
 
+// Frase de cierre (de la propuesta de servicio). Lo que va en `highlight` se resalta en dorado.
+export const CLOSING = {
+  text: 'En tiempos digitales, no invertir en publicidad es',
+  highlight: 'regalarle ventas a tu competencia directa.',
+};
+
 export const NOT_INCLUDED = ['Community management', 'Diseño de marca o logo', 'SEO orgánico'];
 
 export const CHALLENGES = [
