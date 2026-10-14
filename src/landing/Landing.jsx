@@ -117,8 +117,10 @@ export default function Landing() {
                 <span aria-hidden="true">09</span><span className="colon" aria-hidden="true">:</span><span aria-hidden="true">00</span>
               </h1>
             </div>
-            <div className="intro"><p className="hero-line">El teléfono <b>no suena.</b></p></div>
-            <div className="phone-ring">0 llamadas · 0 mensajes</div>
+            <div className="intro">
+              <p className="hero-line">El teléfono <b>no suena.</b></p>
+              <p className="phone-ring"><i aria-hidden="true" />0 llamadas · 0 mensajes</p>
+            </div>
             <div className="scroll-cue"><span className="mouse"><i /></span>Bajá para que pase el día</div>
           </div>
         </section>
