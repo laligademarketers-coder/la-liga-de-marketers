@@ -103,7 +103,9 @@ export default function Landing() {
         </div>
       </header>
 
+      <div className="story-progress" aria-hidden="true"><i /></div>
       <nav className="chapters" aria-label="Capítulos" />
+      <div className="scroll-hint" aria-hidden="true"><span>Seguí bajando, la historia continúa</span><i className="chev" /></div>
 
       <main>
         {/* 0 · HERO */}
@@ -117,7 +119,7 @@ export default function Landing() {
             </div>
             <div className="intro"><p className="hero-line">El teléfono <b>no suena.</b></p></div>
             <div className="phone-ring">0 llamadas · 0 mensajes</div>
-            <div className="scroll-cue">Scrolleá para que pase el día</div>
+            <div className="scroll-cue"><span className="mouse"><i /></span>Bajá para que pase el día</div>
           </div>
         </section>
 
@@ -207,12 +209,9 @@ export default function Landing() {
           <h2 className="display big center">La máquina no termina<br />en el click</h2>
           <p className="lead center">Para que una consulta se convierta en tratamiento, la clínica necesita herramientas. Las armamos con vos.</p>
           <div className="extras">
-            {EXTRAS.map((x, i) => (
-              <article className="extra" key={x.title}>
-                <span className="n">0{i + 1}</span><h3>{x.title}</h3><p>{x.text}</p>
-              </article>
-            ))}
+            {EXTRAS.map((x, i) => <FlipCard key={x.title} n={i + 1} {...x} />)}
           </div>
+          <p className="extras-hint">Tocá cada tarjeta para ver el detalle</p>
           <p className="not-included"><span>Lo que no hacemos:</span>{NOT_INCLUDED.map(n => <s key={n}>{n}</s>)}<em>Ser claros evita malentendidos.</em></p>
         </section>
 
@@ -249,13 +248,7 @@ export default function Landing() {
 
         {/* 6 · GARANTÍA */}
         <section id="s-garantia" data-chapter="La garantía">
-          <div className="scene">
-            <p className="kicker">Nuestra garantía</p>
-            <div className="g-20 display" aria-hidden="true">{RESULTS.metaTurnosMes}</div>
-            <h2 className="g-copy">Si al mes 3 no llegamos a {RESULTS.metaTurnosMes} turnos agendados, <em>el mes 4 no se cobra.</em></h2>
-            <p className="g-note">Nosotros traemos el paciente calificado. Que agende y se trate depende de cómo lo atienden en la clínica, por eso trabajamos juntos el flujo de atención desde el día 1.</p>
-            <div className="stamp" aria-hidden="true">Garantizado<small>Mes 4 sin costo</small></div>
-          </div>
+          <Guarantee />
         </section>
 
         {/* 7 · FINAL */}
@@ -326,6 +319,127 @@ function Calculator() {
         </div>
         <p className="disclaimer">Basado en datos reales de {RESULTS.periodo.toLowerCase()}. El retorno varía según cada clínica.</p>
       </div>
+    </div>
+  );
+}
+
+function FlipCard({ n, title, text }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <button type="button" className={`extra ${open ? 'flipped' : ''}`} aria-expanded={open}
+      onClick={() => { setOpen(o => !o); if (!open) pushEvent('extra_card_open', { card: title }); }}>
+      <span className="extra-in">
+        <span className="face front">
+          <span className="n">0{n}</span>
+          <span className="t">{title}</span>
+          <span className="more" aria-hidden="true">+</span>
+        </span>
+        <span className="face back">
+          <span className="t">{title}</span>
+          <span className="d">{text}</span>
+          <span className="more" aria-hidden="true">×</span>
+        </span>
+      </span>
+    </button>
+  );
+}
+
+// ─── Garantía: 3 propuestas. Se eligen con ?garantia=medidor|contrato|meses ───
+export const GUARANTEE_VARIANTS = [
+  { id: 'medidor', label: 'A · Medidor' },
+  { id: 'contrato', label: 'B · Contrato' },
+  { id: 'meses', label: 'C · Los 4 meses' },
+];
+function guaranteeVariant() {
+  const param = new URLSearchParams(window.location.search).get('garantia');
+  return GUARANTEE_VARIANTS.some(v => v.id === param) ? param : 'medidor';
+}
+
+const G_CLAUSE = `Si al mes 3 no llegamos a ${RESULTS.metaTurnosMes} turnos agendados por mes de pacientes calificados,`;
+const G_NOTE = 'Nosotros traemos el paciente calificado. Que agende y se trate depende de cómo lo atienden en la clínica, por eso trabajamos juntos el flujo de atención desde el día 1.';
+
+function Guarantee() {
+  const variant = guaranteeVariant();
+  const comparing = new URLSearchParams(window.location.search).has('garantia');
+  const meta = RESULTS.metaTurnosMes;
+  return (
+    <div className={`scene g-scene g-${variant}`} data-variant={variant}>
+      {variant === 'medidor' && (
+        <div className="g-wrap">
+          <div className="g-meter" aria-hidden="true">
+            <svg viewBox="0 0 220 220">
+              {Array.from({ length: meta }, (_, i) => {
+                const a0 = (i / meta) * 2 * Math.PI - Math.PI / 2 + 0.035;
+                const a1 = ((i + 1) / meta) * 2 * Math.PI - Math.PI / 2 - 0.035;
+                const p = a => `${110 + 96 * Math.cos(a)} ${110 + 96 * Math.sin(a)}`;
+                return <path key={i} className="seg" d={`M ${p(a0)} A 96 96 0 0 1 ${p(a1)}`} />;
+              })}
+            </svg>
+            <div className="g-center"><b className="g-num display">0</b><span>turnos al mes</span></div>
+            <i className="g-check">✓</i>
+          </div>
+          <div className="g-text">
+            <p className="kicker">Nuestra garantía</p>
+            <h2 className="g-copy">{G_CLAUSE} <em>el mes 4 no se cobra.</em></h2>
+            <p className="g-note">{G_NOTE}</p>
+          </div>
+        </div>
+      )}
+
+      {variant === 'contrato' && (
+        <article className="g-paper">
+          <header><span>Cláusula de garantía</span><span>La Liga de Marketers</span></header>
+          <h2 className="g-clause">
+            {G_CLAUSE.split(' ').map((w, i) => <span className="w" key={i}>{w} </span>)}
+            <mark>el mes 4 no se cobra.</mark>
+          </h2>
+          <p className="g-note">{G_NOTE}</p>
+          <footer>
+            <svg className="g-sign" viewBox="0 0 320 90" aria-hidden="true">
+              <path d="M12 62 C 28 18, 50 16, 54 54 S 72 82, 88 42 S 112 10, 117 50 S 134 76, 152 44 C 166 22, 178 30, 172 56 C 169 72, 192 62, 206 40 S 236 26, 242 54 S 274 72, 308 28" />
+            </svg>
+            <span>Firma · La Liga de Marketers · Córdoba</span>
+          </footer>
+        </article>
+      )}
+
+      {variant === 'meses' && (
+        <div className="g-wrap col">
+          <div className="g-text center">
+            <p className="kicker">Nuestra garantía</p>
+            <h2 className="g-copy">{G_CLAUSE} <em>el mes 4 no se cobra.</em></h2>
+          </div>
+          <div className="g-months" aria-hidden="true">
+            <div className="g-goal"><span>Meta · {meta} turnos/mes</span></div>
+            {/* valores ilustrativos: el mes 3 queda corto a propósito para mostrar cómo actúa la garantía */}
+            {[6, 13, 16].map((v, i) => {
+              const h = `${(v / (meta * 1.25)) * 100}%`; // la meta queda al 80% de la altura
+              return (
+                <div className="g-month" key={i}>
+                  <div className="g-bar" data-v={v} data-h={h}><i style={{ height: h }}><b>{v}</b></i></div><span>Mes {i + 1}</span>
+                </div>
+              );
+            })}
+            <div className="g-month m4">
+              <div className="g-bill">
+                <span className="cobra">Se cobra</span>
+                <span className="free"><b>$0</b>no se cobra</span>
+              </div>
+              <span>Mes 4</span>
+            </div>
+          </div>
+          <p className="g-cond"><span className="a">Ejemplo: ¿y si al mes 3 no llegamos a la meta?</span><span className="b">{G_NOTE}</span></p>
+        </div>
+      )}
+
+      {comparing && (
+        <nav className="g-switch" aria-label="Opciones de garantía">
+          {GUARANTEE_VARIANTS.map(v => (
+            <a key={v.id} className={v.id === variant ? 'on' : ''} href={`?garantia=${v.id}#s-garantia`}
+              onClick={e => { e.stopPropagation(); e.preventDefault(); window.location.href = `?garantia=${v.id}#s-garantia`; }}>{v.label}</a>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }

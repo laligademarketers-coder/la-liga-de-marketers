@@ -48,14 +48,18 @@ export function initStory(root) {
     if (reduce) return;
 
     // ─── Reloj: el scroll es el paso del día (09:00 → 18:30) ───
-    const clock = $('.clock-time');
+    const clock = $('.clock-time'), bar = $('.story-progress i');
+    let pageProgress = 0;
     ScrollTrigger.create({
       start: 0, end: 'max',
       onUpdate: self => {
         const m = 9 * 60 + Math.round(self.progress * 570 / 5) * 5;
         clock.textContent = `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+        bar.style.transform = `scaleX(${self.progress})`;
+        pageProgress = self.progress;
       },
     });
+    cleanups.push(setupScrollHint(root, () => pageProgress));
 
     // ─── 0 · Hero ───
     gsap.from('#s-hero .intro', { y: 40, opacity: 0, duration: 1.2, stagger: 0.15, ease: 'expo.out' });
@@ -152,13 +156,8 @@ export function initStory(root) {
       }));
     }
 
-    // ─── 6 · Garantía ───
-    gsap.timeline({ scrollTrigger: { trigger: '#s-garantia', start: 'top top', end: '+=160%', pin: true, scrub: 1 } })
-      .from('.g-20', { scale: 2.4, opacity: 0, filter: 'blur(20px)', duration: 1 })
-      .from('.g-copy', { y: 40, opacity: 0, duration: 0.5 }, 0.6)
-      .fromTo('.stamp', { opacity: 0, scale: 2.6, rotation: -30 }, { opacity: 1, scale: 1, rotation: -12, duration: 0.3, ease: 'power4.in' }, 1.1)
-      .to('.g-20', { x: 6, duration: 0.04, repeat: 3, yoyo: true }, 1.4)
-      .from('.g-note', { y: 30, opacity: 0, duration: 0.4 }, 1.5);
+    // ─── 6 · Garantía (3 propuestas) ───
+    setupGuarantee(root);
 
     // ─── 7 · La agenda, ahora llena ───
     gsap.set('.f-cta', { y: 30 });
@@ -182,7 +181,11 @@ export function initStory(root) {
   }, root);
 
   // Fuentes y logos cambian medidas: re-medir cuando estén listos
-  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+  document.fonts?.ready.then(() => {
+    ScrollTrigger.refresh();
+    const target = location.hash && root.querySelector(location.hash);
+    if (target) lenis ? lenis.scrollTo(target, { immediate: true }) : target.scrollIntoView();
+  });
 
   return () => {
     ctx.revert();
@@ -208,7 +211,7 @@ function setupMachine(root, reduce) {
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     const pos = W < 860
       ? { gads: [0.2, 0.27], meta: [0.5, 0.27], gmb: [0.8, 0.27], web: [0.5, 0.43], wa: [0.5, 0.57], turno: [0.5, 0.7] }
-      : { gads: [0.13, 0.36], meta: [0.13, 0.54], gmb: [0.13, 0.72], web: [0.42, 0.54], wa: [0.64, 0.54], turno: [0.86, 0.54] };
+      : { gads: [0.18, 0.36], meta: [0.18, 0.54], gmb: [0.18, 0.72], web: [0.44, 0.54], wa: [0.65, 0.54], turno: [0.86, 0.54] };
     for (const k in pos) {
       nodes[k].x = pos[k][0] * W; nodes[k].y = pos[k][1] * H;
       nodes[k].el.style.left = nodes[k].x + 'px'; nodes[k].el.style.top = nodes[k].y + 'px';
@@ -303,4 +306,77 @@ function setupMachine(root, reduce) {
       removeEventListener('resize', layout);
     },
   };
+}
+
+/** Si la persona deja de scrollear en medio de la historia, le recordamos que sigue. */
+function setupScrollHint(root) {
+  const hint = root.querySelector('.scroll-hint');
+  const contact = root.querySelector('#contacto');
+  let idle;
+  const arm = () => {
+    hint.classList.remove('show');
+    clearTimeout(idle);
+    idle = setTimeout(() => {
+      // en el hero ya está la indicación propia; el aviso es para quien se frena a mitad de la historia
+      if (scrollY > innerHeight * 0.5 && contact.getBoundingClientRect().top > innerHeight * 0.6) hint.classList.add('show');
+    }, 2200);
+  };
+  addEventListener('scroll', arm, { passive: true });
+  return () => { removeEventListener('scroll', arm); clearTimeout(idle); };
+}
+
+/** Garantía: cada propuesta tiene su propia coreografía, todas pineadas y controladas por scroll. */
+function setupGuarantee(root) {
+  const scene = root.querySelector('.g-scene');
+  const q = s => scene.querySelector(s), qa = s => Array.from(scene.querySelectorAll(s));
+  const tl = gsap.timeline({ scrollTrigger: { trigger: '#s-garantia', start: 'top top', end: '+=200%', pin: true, scrub: 1 } });
+
+  if (scene.dataset.variant === 'medidor') {
+    // 20 segmentos = 20 turnos que se van encendiendo
+    const segs = qa('.seg'), num = q('.g-num'), meter = q('.g-meter');
+    const c = { n: 0 };
+    num.textContent = '0';
+    tl.from(meter, { scale: 0.75, opacity: 0, duration: 0.4 })
+      .from(qa('.g-text > *'), { y: 40, opacity: 0, stagger: 0.12, duration: 0.4 }, 0.1)
+      .to(c, {
+        n: segs.length, duration: 1.4, ease: 'none',
+        onUpdate: () => {
+          const k = Math.round(c.n);
+          num.textContent = k;
+          segs.forEach((s, i) => s.classList.toggle('on', i < k));
+          meter.classList.toggle('full', k >= segs.length);
+        },
+      }, 0.4)
+      .to({}, { duration: 0.5 });
+  }
+
+  if (scene.dataset.variant === 'contrato') {
+    // la cláusula se lee palabra por palabra, se resalta y se firma
+    const path = q('.g-sign path'), len = path.getTotalLength();
+    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+    tl.from(q('.g-paper'), { y: 90, rotation: -2, opacity: 0, duration: 0.4 })
+      .to(qa('.g-clause .w'), { opacity: 1, stagger: 0.05, duration: 0.1, ease: 'none' }, 0.3)
+      .to(q('.g-clause mark'), { backgroundSize: '100% 100%', color: '#2a1d00', duration: 0.35 })
+      .from(q('.g-paper .g-note'), { opacity: 0, y: 20, duration: 0.25 })
+      .to(path, { strokeDashoffset: 0, duration: 0.7, ease: 'none' })
+      .from(q('.g-paper footer span'), { opacity: 0, duration: 0.2 }, '<0.4')
+      .to({}, { duration: 0.3 });
+  }
+
+  if (scene.dataset.variant === 'meses') {
+    // 3 meses de barras; el 3º no llega a la meta → el mes 4 se da vuelta y queda en $0
+    const bars = qa('.g-bar');
+    tl.from(qa('.g-text > *'), { y: 40, opacity: 0, stagger: 0.12, duration: 0.35 });
+    bars.forEach((b, i) => {
+      const v = +b.dataset.v, c = { n: 0 }, label = b.querySelector('b');
+      tl.fromTo(b.querySelector('i'), { height: '0%' }, { height: b.dataset.h, duration: 0.35, ease: 'none' }, 0.3 + i * 0.35)
+        .to(c, { n: v, duration: 0.35, ease: 'none', onUpdate: () => (label.textContent = Math.round(c.n)) }, '<');
+    });
+    tl.to(bars[2].querySelector('i'), { backgroundImage: 'linear-gradient(180deg, #ff8a98, #b8394f)', duration: 0.1 }, 1.45)
+      .to(q('.g-cond .a'), { opacity: 1, duration: 0.15 }, 1.45)
+      .to(q('.g-bill'), { rotationY: 180, duration: 0.4, ease: 'power2.inOut' }, 1.7)
+      .to(q('.g-cond .a'), { opacity: 0, duration: 0.1 }, 2.15)
+      .to(q('.g-cond .b'), { opacity: 1, duration: 0.15 }, 2.2)
+      .to({}, { duration: 0.3 });
+  }
 }
