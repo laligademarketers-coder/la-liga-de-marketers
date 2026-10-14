@@ -282,7 +282,7 @@ export default function Landing() {
               {CLOSING.text.split(' ').map((w, i) => <span className="w" key={`t${i}`}>{w} </span>)}
               {CLOSING.highlight.split(' ').map((w, i) => <span className="w hl" key={`h${i}`}>{w} </span>)}
             </p>
-            <WaLink location="closing" className="btn-wa lg">Que tu competencia no se quede con tus pacientes</WaLink>
+            <WaLink location="closing" className="btn-wa lg">Escribinos por WhatsApp</WaLink>
           </div>
         </section>
       </main>
