@@ -4,8 +4,21 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
-    { "source": "/diagnostico", "destination": "/", "permanent": true },
-    { "source": "/dashboard-diagnosticos", "destination": "/", "permanent": true },
-    { "source": "/index.html", "destination": "/", "permanent": true }
-  ]
+    {
+      "source": "/diagnostico",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/dashboard-diagnosticos",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
+  "trailingSlash": false
 }

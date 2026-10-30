@@ -44,20 +44,11 @@ export const TIMELINE = [
   { when: 'Mes 3', title: 'Decisión', items: ['Evaluación completa de los 3 meses', 'Decisión de continuidad basada en datos reales'] },
 ];
 
-export const EXTRAS = [
-  { title: 'Financiación para el paciente', text: 'Cuotas propias para ortodoncia, bancaria para implantes y ATM. El "no tengo presupuesto" desaparece.' },
-  { title: 'CRM y seguimiento', text: 'Ningún lead se pierde: desde la primera consulta hasta el turno confirmado, todo rastreado.' },
-  { title: 'Scripts de WhatsApp', text: 'Respuestas a dudas y objeciones antes de que el paciente se vaya a pensar.' },
-  { title: 'Oferta clara por tratamiento', text: 'Materiales, proceso, tiempos y precio. El paciente particular necesita entender qué paga.' },
-];
-
 // Frase de cierre (de la propuesta de servicio). Lo que va en `highlight` se resalta en dorado.
 export const CLOSING = {
   text: 'En tiempos digitales, no invertir en publicidad es',
   highlight: 'regalarle ventas a tu competencia directa.',
 };
-
-export const NOT_INCLUDED = ['Community management', 'Diseño de marca o logo', 'SEO orgánico'];
 
 export const CHALLENGES = [
   'Quiero más pacientes particulares',

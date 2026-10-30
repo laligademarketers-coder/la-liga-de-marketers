@@ -13,7 +13,7 @@ window.fbq('track', 'PageView');
 
 const app = (
   <React.StrictMode>
-    <App />
+    <App path={window.location.pathname} />
   </React.StrictMode>
 );
 const container = document.getElementById('root');

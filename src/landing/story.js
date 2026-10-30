@@ -133,8 +133,8 @@ export function initStory(root) {
     }
 
     // ─── 3b · Más que campañas ───
-    gsap.from('.extra', { y: 60, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'expo.out', clearProps: 'transform', scrollTrigger: { trigger: '.extras', start: 'top 80%' } });
-    gsap.from('#s-cierre .big, #s-cierre .lead', { y: 40, opacity: 0, duration: 1, stagger: 0.1, ease: 'expo.out', scrollTrigger: { trigger: '#s-cierre', start: 'top 75%' } });
+    gsap.from('.fase-card', { y: 60, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'expo.out', clearProps: 'transform', scrollTrigger: { trigger: '.fases', start: 'top 80%' } });
+    gsap.from('#s-fases .big, #s-fases .lead', { y: 40, opacity: 0, duration: 1, stagger: 0.1, ease: 'expo.out', scrollTrigger: { trigger: '#s-fases', start: 'top 75%' } });
 
     // ─── 4 · Objeción: las palabras se encienden con el scroll ───
     gsap.to('.quote .w', { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: '.quote', start: 'top 80%', end: 'bottom 40%', scrub: true } });

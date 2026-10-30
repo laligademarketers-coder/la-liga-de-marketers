@@ -1,31 +1,13 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import {
-  RESULTS, WA_URL, WA_NUMBER, WA_PHONE_LABEL, PAINS, SEARCH_LINES, NODES, TIMELINE,
-  EXTRAS, CLOSING, NOT_INCLUDED, CHALLENGES, DAYS, HOURS, AGENDA,
-} from './data';
+import React, { useRef, useState } from 'react';
+import { RESULTS, PAINS, SEARCH_LINES, NODES, TIMELINE, CLOSING, DAYS, HOURS, AGENDA } from './data';
 import { pushEvent } from './tracking';
 import { initStory } from './story';
+import { PHASES } from '../shared/phases';
+import { SiteHeader, SiteFooter, WaLink, ContactForm, useIsoLayoutEffect } from '../shared/ui';
 import './landing.css';
+import '../shared/site.css';
 
 const fmt = n => n.toLocaleString('es-AR');
-// useLayoutEffect en el navegador; en el prerender (Node) no hace nada y no emite avisos
-const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
-
-const WhatsAppIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2.163c5.514 0 9.98 4.466 9.98 9.98 0 5.515-4.466 9.98-9.98 9.98-1.733 0-3.363-.442-4.778-1.218L2 22l1.126-4.118A9.938 9.938 0 012.02 12.143C2.02 6.628 6.486 2.163 12 2.163z" />
-  </svg>
-);
-
-function WaLink({ location, className = 'btn-wa', children }) {
-  return (
-    <a className={className} href={WA_URL} target="_blank" rel="noopener noreferrer"
-      onClick={() => pushEvent('wa_click', { location })}>
-      <WhatsAppIcon />{children}
-    </a>
-  );
-}
-
 function Agenda({ id, mode }) {
   return (
     <div className="agenda" id={id} aria-hidden="true">
@@ -53,37 +35,6 @@ function Agenda({ id, mode }) {
   );
 }
 
-function ContactForm() {
-  const [form, setForm] = useState({ name: '', phone: '', clinic: '', challenge: '' });
-  const [error, setError] = useState(false);
-  const onChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
-  const onSubmit = e => {
-    e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim()) { setError(true); return; }
-    setError(false);
-    const msg = encodeURIComponent(
-      `Hola, soy ${form.name}${form.clinic ? ` de ${form.clinic}` : ''}. Mi WhatsApp es ${form.phone}.${form.challenge ? ` Desafío: ${form.challenge}.` : ''}`
-    );
-    pushEvent('lead_form_submit', { user_name: form.name, lead_source: 'landing_dental' });
-    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
-  };
-  return (
-    <form className="form" onSubmit={onSubmit} noValidate>
-      <label>Tu nombre<input name="name" value={form.name} onChange={onChange} placeholder="Dr. / Dra. nombre" autoComplete="name" required /></label>
-      <label>WhatsApp<input name="phone" type="tel" value={form.phone} onChange={onChange} placeholder="+54 9 351..." autoComplete="tel" required /></label>
-      <label>Clínica / Consultorio<input name="clinic" value={form.clinic} onChange={onChange} placeholder="Nombre de tu clínica" autoComplete="organization" /></label>
-      <label>Principal desafío
-        <select name="challenge" value={form.challenge} onChange={onChange}>
-          <option value="">Seleccioná una opción</option>
-          {CHALLENGES.map(c => <option key={c}>{c}</option>)}
-        </select>
-      </label>
-      {error && <p className="form-error" role="alert">Completá tu nombre y tu WhatsApp.</p>}
-      <button type="submit">Quiero más pacientes particulares →</button>
-    </form>
-  );
-}
-
 export default function Landing() {
   const root = useRef(null);
 
@@ -95,15 +46,7 @@ export default function Landing() {
 
   return (
     <div className="landing" ref={root}>
-      <header className="topbar">
-        <a className="brand" href="#s-hero" aria-label="La Liga de Marketers, inicio">
-          <img src="/imagenes/logo-icon.png" alt="" /><span>La Liga de Marketers</span>
-        </a>
-        <div className="top-right">
-          <div className="clock" aria-hidden="true"><span className="clock-time">09:00</span><small>Martes</small></div>
-          <WaLink location="nav">WhatsApp</WaLink>
-        </div>
-      </header>
+      <SiteHeader current="/" clock />
 
       <div className="story-progress" aria-hidden="true"><i /></div>
       <nav className="chapters" aria-label="Capítulos" />
@@ -207,16 +150,15 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 3b · MÁS QUE CAMPAÑAS */}
-        <section id="s-cierre" data-chapter="El cierre">
-          <p className="kicker center">Más que campañas</p>
-          <h2 className="display big center">La máquina no termina<br />en el click</h2>
-          <p className="lead center">Para que una consulta se convierta en tratamiento, la clínica necesita herramientas. Las armamos con vos.</p>
-          <div className="extras">
-            {EXTRAS.map((x, i) => <FlipCard key={x.title} n={i + 1} {...x} />)}
+        {/* 3b · LAS 3 FASES */}
+        <section id="s-fases" data-chapter="Las 3 fases">
+          <p className="kicker center">Cómo trabajamos</p>
+          <h2 className="display big center">No todas las clínicas están<br />listas para recibir pacientes</h2>
+          <p className="lead fases-lead">Por eso trabajamos en 3 fases. Empezamos con una evaluación inicial: si tu clínica ya está preparada, vamos directo a la captación; si no, primero asentamos las bases.</p>
+          <div className="fases">
+            {PHASES.map(p => <PhaseCard key={p.n} phase={p} />)}
           </div>
-          <p className="extras-hint">Tocá cada tarjeta para ver el detalle</p>
-          <p className="not-included"><span>Lo que no hacemos:</span>{NOT_INCLUDED.map(n => <s key={n}>{n}</s>)}<em>Ser claros evita malentendidos.</em></p>
+          <p className="fases-route">Tocá cada fase para ver de qué se trata · <b>Evaluación inicial → Fase 1 o Fase 2 → Fase 3</b></p>
         </section>
 
         {/* 4 · OBJECIÓN */}
@@ -231,7 +173,7 @@ export default function Landing() {
         <section id="s-dias" data-chapter="90 días">
           <div className="scene">
             <div className="d-head">
-              <div><p className="kicker">El proceso</p><h2 className="display">Sabés qué pasa<br />cada semana</h2></div>
+              <div><p className="kicker">Fase 2 · El proceso</p><h2 className="display">Sabés qué pasa<br />cada semana</h2></div>
               <div className="d-count" aria-hidden="true"><b className="d-num">01</b><span>Día de 90</span></div>
             </div>
             <div className="d-track">
@@ -262,8 +204,8 @@ export default function Landing() {
             <Agenda id="agenda-liga" mode="after" />
             <p className="agenda-legend" aria-hidden="true"><i className="l-part" />Paciente particular<i className="l-os" />Obra social</p>
             <div className="f-cta">
-              <WaLink location="final">Quiero más pacientes particulares</WaLink>
-              <p>Llamada de 30 minutos, sin costo ni compromiso.</p>
+              <WaLink location="final">Quiero mi evaluación inicial</WaLink>
+              <p>30 minutos, sin costo: vemos en qué fase está tu clínica.</p>
             </div>
           </div>
         </section>
@@ -272,9 +214,9 @@ export default function Landing() {
         <section id="contacto" data-chapter="Hablemos">
           <div className="contact">
             <div>
-              <p className="kicker">Hablemos</p>
-              <h2 className="display big">¿Preferís que<br />te escribamos?</h2>
-              <p className="lead">Completá el formulario y te contactamos en menos de 24 hs. O escribinos directo.</p>
+              <p className="kicker">Evaluación inicial</p>
+              <h2 className="display big">¿En qué fase<br />está tu clínica?</h2>
+              <p className="lead">Completá el formulario y te contactamos en menos de 24 hs para una evaluación inicial de 30 minutos, sin costo. O escribinos directo.</p>
               <WaLink location="contact" className="btn-wa lg">Escribir por WhatsApp</WaLink>
             </div>
             <ContactForm />
@@ -292,10 +234,7 @@ export default function Landing() {
         </section>
       </main>
 
-      <footer>
-        <span>La Liga de Marketers · Córdoba, Argentina</span>
-        <a href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer">{WA_PHONE_LABEL}</a>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
@@ -338,24 +277,30 @@ function Calculator() {
   );
 }
 
-function FlipCard({ n, title, text }) {
+/** Tarjeta de fase: al tocarla gira y muestra el resumen con el enlace a su página. */
+function PhaseCard({ phase }) {
   const [open, setOpen] = useState(false);
   return (
-    <button type="button" className={`extra ${open ? 'flipped' : ''}`} aria-expanded={open}
-      onClick={() => { setOpen(o => !o); if (!open) pushEvent('extra_card_open', { card: title }); }}>
-      <span className="extra-in">
-        <span className="face front">
-          <span className="n">0{n}</span>
-          <span className="t">{title}</span>
+    <div className={`fase-card ${open ? 'flipped' : ''}`}>
+      <div className="fase-in">
+        <button type="button" className="front" aria-expanded={open}
+          onClick={() => { setOpen(true); pushEvent('fase_card_open', { fase: phase.n }); }}>
+          <span className="k">Fase {phase.n}</span>
+          <span className="num">0{phase.n}</span>
+          <span className="t">{phase.name}</span>
           <span className="more" aria-hidden="true">+</span>
-        </span>
-        <span className="face back">
-          <span className="t">{title}</span>
-          <span className="d">{text}</span>
-          <span className="more" aria-hidden="true">×</span>
-        </span>
-      </span>
-    </button>
+        </button>
+        <div className="face back">
+          <span className="k">Fase {phase.n} · {phase.name}</span>
+          <h3>{phase.title}</h3>
+          <p>{phase.summary}</p>
+          <a className="go" href={phase.path} tabIndex={open ? 0 : -1}>Ver la fase {phase.n} →</a>
+          <button type="button" className="close" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1}>
+            <span className="sr-only">Volver</span><span aria-hidden="true">×</span>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -369,7 +314,7 @@ function Guarantee() {
     <div className="scene g-scene">
       <div className="g-wrap col">
         <div className="g-text center">
-          <p className="kicker">Nuestra garantía</p>
+          <p className="kicker">Fase 2 · Nuestra garantía</p>
           <h2 className="g-copy">{G_CLAUSE} <em>el mes 4 no se cobra.</em></h2>
         </div>
         <div className="g-months" aria-hidden="true">
