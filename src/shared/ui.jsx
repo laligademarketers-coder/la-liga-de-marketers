@@ -95,7 +95,7 @@ export function SiteHeader({ current, clock = false }) {
 
 export function SiteFooter() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer t-dark">
       <div className="f-brand">
         <a className="brand" href="/"><img src="/imagenes/logo-icon.png" alt="" width="30" height="30" /><span>La Liga de Marketers</span></a>
         <p>Marketing odontológico para clínicas y consultorios dentales. Córdoba, Argentina.</p>

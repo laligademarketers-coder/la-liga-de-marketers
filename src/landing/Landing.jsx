@@ -6,6 +6,8 @@ import { PHASES } from '../shared/phases';
 import { SiteHeader, SiteFooter, WaLink, ContactForm, useIsoLayoutEffect } from '../shared/ui';
 import './landing.css';
 import '../shared/site.css';
+import '../shared/themes.css';
+import { watchTheme } from '../shared/theme';
 
 const fmt = n => n.toLocaleString('es-AR');
 function Agenda({ id, mode }) {
@@ -41,7 +43,8 @@ export default function Landing() {
   useIsoLayoutEffect(() => {
     document.body.classList.add('is-landing');
     const destroy = initStory(root.current);
-    return () => { destroy(); document.body.classList.remove('is-landing'); };
+    const unwatch = watchTheme(root.current);
+    return () => { destroy(); unwatch(); document.body.classList.remove('is-landing'); };
   }, []);
 
   return (
@@ -54,7 +57,7 @@ export default function Landing() {
 
       <main>
         {/* 0 · HERO */}
-        <section id="s-hero" data-chapter="09:00">
+        <section id="s-hero" className="t-dark" data-chapter="09:00">
           <div className="scene">
             <div className="intro"><h1 className="kicker hero-k">Marketing odontológico en Córdoba</h1></div>
             <div className="intro">
@@ -71,7 +74,7 @@ export default function Landing() {
         </section>
 
         {/* 1 · PROBLEMA */}
-        <section id="s-problema" data-chapter="La agenda">
+        <section id="s-problema" className="t-light" data-chapter="La agenda">
           <div className="scene">
             <div className="pain-col">
               {PAINS.map((p, i) => (
@@ -94,7 +97,7 @@ export default function Landing() {
         </section>
 
         {/* 2 · BÚSQUEDA */}
-        <section id="s-busqueda" data-chapter="El paciente">
+        <section id="s-busqueda" className="t-violet" data-chapter="El paciente">
           <div className="scene">
             <div className="lines">{SEARCH_LINES.map((l, i) => <p key={i}><span>{l}</span></p>)}</div>
             <div className="phone" aria-hidden="true">
@@ -115,7 +118,7 @@ export default function Landing() {
         </section>
 
         {/* 3 · LA MÁQUINA */}
-        <section id="s-maquina" data-chapter="La máquina">
+        <section id="s-maquina" className="t-dark" data-chapter="La máquina">
           <div className="scene">
             <canvas className="machine-canvas" aria-hidden="true" />
             <div className="m-copy">
@@ -151,7 +154,7 @@ export default function Landing() {
         </section>
 
         {/* 3b · LAS 3 FASES */}
-        <section id="s-fases" data-chapter="Las 3 fases">
+        <section id="s-fases" className="t-light" data-chapter="Las 3 fases">
           <p className="kicker center">Cómo trabajamos</p>
           <h2 className="display big center">No todas las clínicas están<br />listas para recibir pacientes</h2>
           <p className="lead fases-lead">Por eso trabajamos en 3 fases. Empezamos con una evaluación inicial: si tu clínica ya está preparada, vamos directo a la captación; si no, primero asentamos las bases.</p>
@@ -162,7 +165,7 @@ export default function Landing() {
         </section>
 
         {/* 4 · OBJECIÓN */}
-        <section id="s-objecion" data-chapter="La duda">
+        <section id="s-objecion" className="t-dark" data-chapter="La duda">
           <p className="kicker center">La pregunta que más escuchamos</p>
           <h2 className="quote display center">{'“¿Y si gasto plata y no funciona?”'.split(' ').map((w, i) => <span className="w" key={i}>{w}</span>)}</h2>
           <p className="obj-sub">Tiene sentido: nadie quiere invertir sin certeza. Entonces <b>hacé la cuenta vos.</b> Con tus precios, con tu tasa de cierre.</p>
@@ -170,7 +173,7 @@ export default function Landing() {
         </section>
 
         {/* 5 · 90 DÍAS */}
-        <section id="s-dias" data-chapter="90 días">
+        <section id="s-dias" className="t-light" data-chapter="90 días">
           <div className="scene">
             <div className="d-head">
               <div><p className="kicker">Fase 2 · El proceso</p><h2 className="display">Sabés qué pasa<br />cada semana</h2></div>
@@ -193,12 +196,12 @@ export default function Landing() {
         </section>
 
         {/* 6 · GARANTÍA */}
-        <section id="s-garantia" data-chapter="La garantía">
+        <section id="s-garantia" className="t-dark" data-chapter="La garantía">
           <Guarantee />
         </section>
 
         {/* 7 · FINAL */}
-        <section id="s-final" data-chapter="18:30">
+        <section id="s-final" className="t-light" data-chapter="18:30">
           <div className="scene">
             <div className="f-head"><span className="kicker">Martes · 18:30</span><h2 className="display">Así se ve tu agenda<br />con La Liga</h2></div>
             <Agenda id="agenda-liga" mode="after" />
@@ -211,7 +214,7 @@ export default function Landing() {
         </section>
 
         {/* CONTACTO */}
-        <section id="contacto" data-chapter="Hablemos">
+        <section id="contacto" className="t-violet" data-chapter="Hablemos">
           <div className="contact">
             <div>
               <p className="kicker">Evaluación inicial</p>
@@ -223,7 +226,7 @@ export default function Landing() {
           </div>
         </section>
         {/* CIERRE · la frase de la propuesta */}
-        <section id="s-frase" data-chapter="Final">
+        <section id="s-frase" className="t-dark" data-chapter="Final">
           <div className="closing">
             <p className="closing-q">
               {CLOSING.text.split(' ').map((w, i) => <span className="w" key={`t${i}`}>{w} </span>)}

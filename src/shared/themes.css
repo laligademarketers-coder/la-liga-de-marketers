@@ -1,0 +1,56 @@
+/* ── Temas por sección: negro, blanco y violeta ──
+   Cada sección lleva t-dark, t-light o t-violet y redefine los tokens de landing.css.
+   La barra fija, el índice y el aviso de scroll toman el tema de la sección que tienen debajo
+   (body[data-top], lo actualiza watchTheme en theme.js). */
+
+.t-dark,
+[data-top="dark"] :is(.topbar,.chapters,.scroll-hint){
+  --bg:#060507; --bg2:#121014; --ink:#FFFFFF; --muted:#A8A2AE; --dim:#716B77;
+  --pink:#CF7DCA; --gold:#FDCD21; --os:#222024; --os-ink:#8A8490; --line:rgba(255,255,255,.13);
+  --glow:#1c0c29; --surface:rgba(255,255,255,.03); --field:rgba(0,0,0,.5); --scrim:6,5,7;
+}
+.t-light,
+[data-top="light"] :is(.topbar,.chapters,.scroll-hint){
+  --bg:#FFFFFF; --bg2:#F5F2F7; --ink:#0B0710; --muted:#58515F; --dim:#8B8492;
+  --pink:#7E32AB; --gold:#C29000; --os:#EEEBF1; --os-ink:#8B8492; --line:rgba(11,7,16,.12);
+  --glow:#F6EEFA; --surface:rgba(11,7,16,.025); --field:#FFFFFF; --scrim:255,255,255;
+}
+.t-violet,
+[data-top="violet"] :is(.topbar,.chapters,.scroll-hint){
+  --bg:#6B3091; --bg2:#5A2679; --ink:#FFFFFF; --muted:#EBDDF3; --dim:#C9AEDA;
+  --pink:#FDCD21; --gold:#FDCD21; --os:rgba(255,255,255,.12); --os-ink:#E3D2EE; --line:rgba(255,255,255,.24);
+  --glow:#8340AE; --surface:rgba(255,255,255,.08); --field:rgba(20,6,30,.28); --scrim:107,48,145;
+}
+
+:is(.t-dark,.t-light,.t-violet){background-color:var(--bg);color:var(--ink)}
+.landing :is(.t-dark,.t-light,.t-violet) .scene{background-color:var(--bg)}
+
+/* ruido de fondo: casi imperceptible sobre blanco */
+body.is-landing::after{transition:opacity .4s}
+body[data-top="light"]::after{opacity:.035}
+
+/* ── Ajustes por tema ── */
+/* blanco: el teléfono y las tarjetas se separan del fondo con sombra en vez de brillo */
+.t-light .phone{box-shadow:0 40px 100px rgba(11,7,16,.18),0 0 0 1px rgba(11,7,16,.06)}
+.t-light .fase-card .front{background:linear-gradient(170deg,rgba(114,55,150,.10),#fff);box-shadow:0 18px 50px rgba(11,7,16,.06)}
+.t-light .ph-card{background:linear-gradient(170deg,rgba(114,55,150,.07),#fff);box-shadow:0 18px 50px rgba(11,7,16,.05)}
+.t-light .d-card:not(.goal){background:#fff;box-shadow:0 18px 50px rgba(11,7,16,.06)}
+.t-light .cell{border-color:rgba(11,7,16,.14)}
+.t-light .btn-ghost:hover{background:rgba(126,50,171,.06)}
+
+/* violeta: los acentos pasan a dorado y los botones de marca a negro */
+.t-violet .form button{background:#0B0710}
+.t-violet .form button:hover{box-shadow:0 14px 40px rgba(11,7,16,.35)}
+.t-violet .form input:focus,.t-violet .form select:focus{box-shadow:0 0 0 4px rgba(253,205,33,.2)}
+.t-violet .next-card,.t-violet .fase-card .back{background:linear-gradient(140deg,#0B0710,#2a1240)}
+
+/* páginas de fase: el bloque pinta su fondo a todo el ancho aunque el contenido esté centrado */
+.ph-block:is(.t-dark,.t-light,.t-violet){padding-bottom:12vh;box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax)}
+.ph-band{padding:12vh 6vw}
+.ph-band>.ph-guarantee{margin:0 auto}
+.ph-contact:is(.t-dark,.t-light,.t-violet){margin-top:0;padding:14vh 6vw}
+@media (max-width:860px){
+  .ph-band{padding:9vh 16px}
+  .ph-block:is(.t-dark,.t-light,.t-violet){padding-bottom:9vh}
+  .ph-contact:is(.t-dark,.t-light,.t-violet){padding:10vh 16px}
+}

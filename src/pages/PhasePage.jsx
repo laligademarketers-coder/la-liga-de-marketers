@@ -5,6 +5,8 @@ import { PHASE_CONTENT, EVALUACION } from './phase-content';
 import { initPageMotion } from './motion';
 import '../landing/landing.css';
 import '../shared/site.css';
+import '../shared/themes.css';
+import { watchTheme } from '../shared/theme';
 
 /** Indicador 1 · 2 · 3: muestra en qué fase está la página y enlaza a las otras. */
 export function PhaseStepper({ current }) {
@@ -26,18 +28,22 @@ export default function PhasePage({ n }) {
   const phase = PHASES[n - 1];
   const c = PHASE_CONTENT[n];
   const next = PHASES[n] || null;
+  // fondos alternados blanco / negro entre bloques (ver shared/themes.css)
+  let k = 0;
+  const alt = () => (k++ % 2 ? 't-dark' : 't-light');
 
   useIsoLayoutEffect(() => {
     document.body.classList.add('is-landing');
     const destroy = initPageMotion(root.current);
-    return () => { destroy(); document.body.classList.remove('is-landing'); };
+    const unwatch = watchTheme(root.current);
+    return () => { destroy(); unwatch(); document.body.classList.remove('is-landing'); };
   }, []);
 
   return (
     <div className="site phase-page" ref={root}>
       <SiteHeader current={phase.path} />
       <main>
-        <section className="ph-hero">
+        <section className="ph-hero t-dark">
           <p className="kicker">Fase {n} de 3 · {phase.name}</p>
           <h1 className="display ph-title">{c.h1}</h1>
           <p className="lead">{c.lead}</p>
@@ -48,17 +54,17 @@ export default function PhasePage({ n }) {
           <PhaseStepper current={n} />
         </section>
 
-        <section className="ph-block ph-why">
+        <section className="ph-block ph-why t-violet">
           <h2 className="display rv">{c.why.title}</h2>
           <p className="rv">{c.why.text}</p>
         </section>
 
-        <section className="ph-block">
+        <section className={`ph-block ${alt()}`}>
           <h2 className="display rv">Es para tu clínica si…</h2>
           <ul className="ph-checks rv-stagger">{c.forWho.map(t => <li key={t}>{t}</li>)}</ul>
         </section>
 
-        <section className="ph-block">
+        <section className={`ph-block ${alt()}`}>
           <p className="kicker rv">Qué hacemos</p>
           <h2 className="display rv">{phase.title}</h2>
           <div className="ph-cards rv-stagger">
@@ -73,7 +79,7 @@ export default function PhasePage({ n }) {
         </section>
 
         {c.results && (
-          <section className="ph-block ph-results">
+          <section className={`ph-block ph-results ${alt()}`}>
             <p className="kicker rv">{c.results.title}</p>
             <div className="ph-nums rv-stagger">
               {c.results.items.map(r => (
@@ -84,7 +90,7 @@ export default function PhasePage({ n }) {
           </section>
         )}
 
-        <section className="ph-block">
+        <section className={`ph-block ${alt()}`}>
           <p className="kicker rv">El proceso</p>
           <h2 className="display rv">Cómo trabajamos</h2>
           <div className="ph-steps">
@@ -100,18 +106,20 @@ export default function PhasePage({ n }) {
         </section>
 
         {c.guarantee && (
-          <section className="ph-block ph-guarantee rv">
-            <b className="display">{c.guarantee.match(/\d+(?= turnos)/)?.[0]}</b>
-            <div><p className="kicker">Nuestra garantía</p><p className="g-copy">{c.guarantee}</p></div>
-          </section>
+          <div className={`ph-band ${alt()}`}>
+            <section className="ph-block ph-guarantee rv">
+              <b className="display">{c.guarantee.match(/\d+(?= turnos)/)?.[0]}</b>
+              <div><p className="kicker">Nuestra garantía</p><p className="g-copy">{c.guarantee}</p></div>
+            </section>
+          </div>
         )}
 
-        <section className="ph-block">
+        <section className={`ph-block ${alt()}`}>
           <h2 className="display rv">{c.outcome.title}</h2>
           <ul className="ph-checks gold rv-stagger">{c.outcome.items.map(t => <li key={t}>{t}</li>)}</ul>
         </section>
 
-        <section className="ph-block ph-faq">
+        <section className={`ph-block ph-faq ${alt()}`}>
           <h2 className="display rv">Preguntas frecuentes</h2>
           <div className="rv-stagger">
             {c.faqs.map(f => (
@@ -123,16 +131,16 @@ export default function PhasePage({ n }) {
           </div>
         </section>
 
-        <section className="ph-block ph-next rv">
+        <section className={`ph-block ph-next ${alt()}`}>
           {next ? (
-            <a href={next.path} className="next-card">
+            <a href={next.path} className="next-card rv">
               <span className="kicker">Después · Fase {next.n}</span>
               <b className="display">{next.name}: {next.title}</b>
               <span>{next.summary}</span>
               <i aria-hidden="true">→</i>
             </a>
           ) : (
-            <a href={PHASES[0].path} className="next-card">
+            <a href={PHASES[0].path} className="next-card rv">
               <span className="kicker">¿No sabés por dónde empezar?</span>
               <b className="display">Volvé a la Fase 1: {PHASES[0].title}</b>
               <span>{PHASES[0].summary}</span>
@@ -141,7 +149,7 @@ export default function PhasePage({ n }) {
           )}
         </section>
 
-        <section id="contacto" className="ph-contact">
+        <section id="contacto" className="ph-contact t-violet">
           <div className="contact">
             <div>
               <p className="kicker">Evaluación inicial</p>

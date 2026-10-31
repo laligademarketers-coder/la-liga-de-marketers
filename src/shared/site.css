@@ -4,13 +4,13 @@
 .site .lead{color:var(--muted);font-size:17px;line-height:1.65;max-width:640px}
 
 /* ── Menú ── */
-.nav-links{display:flex;gap:6px;padding:5px;border-radius:999px;background:rgba(23,10,34,.6);border:1px solid var(--line);backdrop-filter:blur(8px)}
+.nav-links{display:flex;gap:6px;padding:5px;border-radius:999px;background:rgba(var(--scrim),.6);border:1px solid var(--line);backdrop-filter:blur(8px)}
 .nav-links a{display:flex;flex-direction:column;align-items:center;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.15;transition:background .25s,color .25s}
 .nav-links a small{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--pink)}
-.nav-links a:hover{background:rgba(255,255,255,.06)}
+.nav-links a:hover{background:var(--surface)}
 .nav-links a[aria-current="page"]{background:var(--v);color:#fff}
 .nav-links a[aria-current="page"] small{color:#f1d2ef}
-.menu-btn{display:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(23,10,34,.8);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.menu-btn{display:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(var(--scrim),.8);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
 .menu-btn i{display:block;width:16px;height:2px;border-radius:2px;background:var(--ink);transition:transform .3s}
 .menu-open .menu-btn i:first-of-type{transform:translateY(3.5px) rotate(45deg)}
 .menu-open .menu-btn i:last-of-type{transform:translateY(-3.5px) rotate(-45deg)}
@@ -54,7 +54,7 @@
 .fase-card .front .num{font-family:var(--display);font-size:84px;line-height:1;color:var(--pink)}
 .fase-card .front .k{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
 .fase-card .front .t{font-size:24px;font-weight:800;line-height:1.2}
-.fase-card .front .more{position:absolute;bottom:18px;right:20px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);font-size:18px}
+.fase-card .front .more{position:absolute;bottom:18px;right:20px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);font-size:18px}
 .fase-card .back{transform:rotateY(180deg);gap:14px;justify-content:center;background:linear-gradient(160deg,var(--v),#3a1556);border-color:transparent}
 .fase-card .back .k{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#f1d2ef}
 .fase-card .back h3{font-size:20px;font-weight:800;line-height:1.25}
@@ -73,7 +73,7 @@
 
 /* ── Páginas de fase ── */
 .phase-page main{overflow-x:clip}
-.ph-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:130px 6vw 70px;background:radial-gradient(ellipse at 75% 40%,#2c1042,var(--bg) 62%)}
+.ph-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:130px 6vw 70px;background:radial-gradient(ellipse at 75% 40%,var(--glow),var(--bg) 62%)}
 .ph-title{font-size:clamp(40px,6.2vw,96px);max-width:1150px}
 .ph-hero .lead{font-size:clamp(16px,1.6vw,20px);margin-top:26px}
 .ph-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:34px}
@@ -96,7 +96,7 @@
 .ph-block .kicker + h2{margin-top:12px}
 .ph-why p{font-size:clamp(18px,1.9vw,24px);line-height:1.55;max-width:900px;color:var(--ink);font-weight:500}
 .ph-checks{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.ph-checks li{position:relative;padding:20px 22px 20px 58px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:15.5px;line-height:1.5}
+.ph-checks li{position:relative;padding:20px 22px 20px 58px;border-radius:18px;background:var(--surface);border:1px solid var(--line);font-size:15.5px;line-height:1.5}
 .ph-checks li::before{content:"";position:absolute;left:20px;top:20px;width:22px;height:22px;border-radius:50%;background:var(--v) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center/13px no-repeat}
 .ph-checks.gold li::before{background-color:#d9a400}
 .ph-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
@@ -116,7 +116,7 @@
 .ph-steps{position:relative;display:flex;flex-direction:column;gap:22px;padding-left:46px}
 .ph-line{position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:var(--line)}
 .ph-line i{position:absolute;inset:0;background:linear-gradient(180deg,var(--v),var(--pink),var(--gold));transform-origin:top}
-.ph-step{position:relative;padding:24px 26px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.02);transition:border-color .4s,background .4s}
+.ph-step{position:relative;padding:24px 26px;border-radius:20px;border:1px solid var(--line);background:var(--surface);transition:border-color .4s,background .4s}
 .ph-step::before{content:"";position:absolute;left:-40px;top:30px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--dim);transition:background .4s,border-color .4s,box-shadow .4s}
 .ph-step.on{border-color:rgba(207,125,202,.45);background:rgba(114,55,150,.12)}
 .ph-step.on::before{background:var(--pink);border-color:var(--pink);box-shadow:0 0 0 6px rgba(207,125,202,.18)}
