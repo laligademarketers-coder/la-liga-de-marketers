@@ -394,3 +394,31 @@ footer a:hover{color:var(--ink)}
   .m-copy h2{font-size:26px}
   .m-hud{gap:6px 28px}.m-hud b{font-size:24px}
 }
+
+/* ── Hero: primero la propuesta, el 09:00 queda como anticipo de la historia ── */
+#s-hero .hero-scene{flex-direction:row;align-items:center;justify-content:space-between;gap:5vw;padding:96px 6vw 110px 9vw;text-align:left}
+.hero-copy{max-width:760px}
+.hero-title{font-size:clamp(44px,5.6vw,92px);margin-top:16px}
+.hero-title em{font-style:normal;color:var(--pink)}
+.hero-sub{margin-top:24px;max-width:560px;font-size:clamp(16px,1.4vw,19px);line-height:1.6;color:var(--muted)}
+.hero-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:34px}
+.hero-ctas .btn-wa.lg{margin-top:0}
+.hero-day{flex-shrink:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 40px 30px;border-radius:30px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(114,55,150,.2),var(--surface))}
+.hero-day-k{font-size:10px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
+#s-hero .hero-time{font-size:clamp(84px,9vw,150px);margin:8px 0 0}
+#s-hero .hero-line{font-size:clamp(16px,1.5vw,20px);margin-top:4px}
+#s-hero .phone-ring{margin-top:16px}
+@media (max-width:860px){
+  #s-hero .hero-scene{flex-direction:column;justify-content:center;gap:28px;padding:84px 16px 96px}
+  .hero-title{font-size:clamp(36px,10vw,52px)}
+  .hero-sub{font-size:15px;margin-top:16px}
+  .hero-ctas{margin-top:22px}
+  .hero-ctas .btn-wa.lg,.hero-ctas .btn-ghost{padding:14px 20px;font-size:14px}
+  .hero-day{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:4px 14px;padding:16px 18px;border-radius:20px;width:100%}
+  .hero-day-k{width:100%}
+  #s-hero .hero-time{font-size:54px;margin:0}
+  #s-hero .hero-line{margin:0;text-align:left}
+  #s-hero .phone-ring{display:none}
+  #s-hero .scroll-cue{bottom:18px;white-space:nowrap;letter-spacing:.14em;font-size:10px}
+}
+@media (max-width:860px) and (max-height:700px){.hero-day{display:none}}

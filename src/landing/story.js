@@ -65,9 +65,8 @@ export function initStory(root) {
     gsap.from('#s-hero .intro', { y: 40, opacity: 0, duration: 1.2, stagger: 0.15, ease: 'expo.out' });
     gsap.timeline({ scrollTrigger: { trigger: '#s-hero', start: 'top top', end: '+=120%', pin: true, scrub: true } })
       .to('.scroll-cue', { opacity: 0, duration: 0.1 })
-      .to('.hero-time', { scale: 0.35, opacity: 0, filter: 'blur(12px)', duration: 1 }, 0)
-      .to('.hero-line', { y: -80, opacity: 0, duration: 0.6 }, 0.2)
-      .to('.hero-k, .phone-ring', { opacity: 0, duration: 0.4 }, 0);
+      .to('.hero-copy', { y: -90, opacity: 0, duration: 0.7 }, 0)
+      .to('.hero-day', { scale: 1.12, opacity: 0, filter: 'blur(10px)', duration: 1 }, 0.15);
 
     // ─── 1 · Problema: la agenda se llena de obra social ───
     {

@@ -58,18 +58,25 @@ export default function Landing() {
       <main>
         {/* 0 · HERO */}
         <section id="s-hero" className="t-dark" data-chapter="09:00">
-          <div className="scene">
-            <div className="intro"><h1 className="kicker hero-k">Marketing odontológico en Córdoba</h1></div>
-            <div className="intro">
+          <div className="scene hero-scene">
+            <div className="hero-copy">
+              <p className="kicker hero-k intro">Marketing odontológico · Córdoba</p>
+              <h1 className="display hero-title intro">Llenamos la agenda de tu clínica dental con <em>pacientes particulares</em></h1>
+              <p className="hero-sub intro">Diagnóstico, sistema de captación y redes, en 3 fases. Empezamos con una evaluación inicial sin costo.</p>
+              <div className="hero-ctas intro">
+                <WaLink location="hero" className="btn-wa lg">Pedir mi evaluación inicial</WaLink>
+                <a className="btn-ghost" href="#s-fases">Ver las 3 fases</a>
+              </div>
+            </div>
+            <aside className="hero-day intro" aria-label="Un martes en una clínica sin sistema">
+              <span className="hero-day-k">Martes · así arranca hoy</span>
               <div className="hero-time display" aria-hidden="true">
                 <span>09</span><span className="colon">:</span><span>00</span>
               </div>
-            </div>
-            <div className="intro">
               <p className="hero-line">El teléfono <b>no suena.</b></p>
               <p className="phone-ring"><i aria-hidden="true" />0 llamadas · 0 mensajes</p>
-            </div>
-            <div className="scroll-cue"><span className="mouse"><i /></span>Bajá para que pase el día</div>
+            </aside>
+            <div className="scroll-cue"><span className="mouse"><i /></span>Bajá y mirá cómo cambia el día</div>
           </div>
         </section>
 
