@@ -8,257 +8,229 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#101418;--muted:#4A565C;--mint:#0E6E66;--mint-bg:#E8F6F3;--v:#723796;--v2:#9B4FC4;--gold:#FDCD21;--wa:#25D366}
+:root{--ink:#101418;--muted:#4A565C;--mint:#0E6E66;--xray:#7FE0D2;--v:#723796;--v2:#9B4FC4;--gold:#FDCD21;--wa:#25D366}
 *{box-sizing:border-box}
-html,body{margin:0;background:#0B0F10;color:var(--ink);font-family:Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+html,body{margin:0;background:#07090A;color:#fff;font-family:Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .display{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:1.03;margin:0}
-.kick{margin:0;font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--mint)}
-
-/* barra */
-.top{position:fixed;inset:0 0 auto;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 4% 28px;color:#fff;background:linear-gradient(180deg,rgba(8,12,14,.55),rgba(8,12,14,0));transition:background .4s,color .4s}
-.top.solid{background:rgba(255,255,255,.94);color:var(--ink);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(0,0,0,.06)}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-.brand i{width:26px;height:26px;border-radius:50%;border:5px solid var(--v2)}
-.btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14px;padding:13px 20px;border-radius:999px}
+.kick{margin:0;font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px;padding:15px 24px;border-radius:999px}
 .btn.wa{background:var(--wa);color:#062B14}
 .btn.v{background:var(--v);color:#fff}
+.btn.ghost{border:1.5px solid rgba(255,255,255,.5);color:#fff}
 
-/* escenas a todo el ancho */
-.scene{position:relative;height:100vh;height:100svh;overflow:hidden}
-.bg{position:absolute;inset:-6% 0;background-size:cover;background-position:center;will-change:transform}
-.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,12,14,.72) 0%,rgba(8,12,14,.25) 55%,rgba(8,12,14,0) 100%)}
-.shade.r{background:linear-gradient(270deg,rgba(8,12,14,.72) 0%,rgba(8,12,14,.25) 55%,rgba(8,12,14,0) 100%)}
-.content{position:relative;height:100%;display:flex;align-items:center;padding:0 6%}
-.content.end{justify-content:flex-end}
-.card{background:#fff;border-radius:28px;padding:clamp(26px,3.4vw,44px);max-width:540px;box-shadow:0 40px 100px rgba(0,0,0,.35)}
-.card p.t{margin:16px 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.6;color:var(--muted)}
-.card .display{font-size:clamp(38px,4.6vw,68px)}
-.card .btn{margin-top:24px}
-.big-line{position:absolute;left:6%;right:6%;bottom:9vh;color:#fff;font-size:clamp(34px,5.6vw,92px);text-shadow:0 10px 40px rgba(0,0,0,.4)}
-.big-line em{font-style:normal;color:var(--gold)}
-.credit{position:absolute;right:14px;bottom:10px;font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.04em}
+.top{position:fixed;inset:0 0 auto;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 4% 30px;background:linear-gradient(180deg,rgba(7,9,10,.6),rgba(7,9,10,0));transition:background .4s,color .4s}
+.top.solid{background:rgba(255,255,255,.95);color:var(--ink);padding-bottom:16px;box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.brand i{width:26px;height:26px;border-radius:50%;border:5px solid var(--v2)}
+.top .btn{padding:11px 18px;font-size:13px}
 
-/* chat */
-.chat{display:flex;flex-direction:column;gap:10px;margin-top:22px}
-.msg{align-self:flex-start;background:#F1F3F4;border-radius:16px 16px 16px 4px;padding:11px 14px;font-size:14px;max-width:300px}
-.seen{font-size:11px;font-weight:700;color:#B4413A;letter-spacing:.04em}
+/* ── Escenario: una sola "cámara" que avanza por la clínica ── */
+#stage{position:relative;height:100vh;height:100svh;overflow:hidden}
+.cam{position:absolute;inset:0;will-change:transform}
+.layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0}
+.layer.on{opacity:1}
+.xray-layer{filter:grayscale(1) invert(1) contrast(1.4) brightness(1.05);clip-path:inset(0 0 100% 0)}
+.xray-tint{position:absolute;inset:0;background:rgba(14,110,102,.45);mix-blend-mode:color;clip-path:inset(0 0 100% 0)}
+.grid{position:absolute;inset:0;opacity:0;background-image:linear-gradient(rgba(127,224,210,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(127,224,210,.18) 1px,transparent 1px);background-size:56px 56px}
+.scan{position:absolute;left:0;right:0;top:0;height:2px;background:var(--xray);box-shadow:0 0 24px 6px rgba(127,224,210,.6);opacity:0}
+.veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(7,9,10,.35),rgba(7,9,10,.8) 80%)}
 
-/* papel vs digital */
-.split{display:grid;grid-template-columns:1fr 1fr;height:100%}
-.half{position:relative;overflow:hidden}
-.half .bg{inset:0}
-.half .lab{position:absolute;left:8%;right:8%;bottom:10vh;color:#fff}
-.half .lab .display{font-size:clamp(30px,3.6vw,56px)}
-.half .lab p{margin:10px 0 0;font-size:15px;line-height:1.55;max-width:380px;color:#E9EEF0}
-.half .lab b{display:inline-block;margin-top:14px;background:#fff;color:var(--v);font-size:13px;padding:8px 14px;border-radius:999px}
-.paper .bg{filter:grayscale(.85) contrast(.95)}
-.split-title{position:absolute;top:13vh;left:0;right:0;text-align:center;color:#fff;z-index:2;padding:0 6%}
-.split-title .display{font-size:clamp(34px,4.8vw,76px);text-shadow:0 10px 40px rgba(0,0,0,.5)}
+.say{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 7%;pointer-events:none}
+.say .display{font-size:clamp(40px,6.2vw,104px);max-width:1150px;text-shadow:0 10px 50px rgba(0,0,0,.45)}
+.say .display .w{display:inline-block;opacity:.12;margin-right:.18em}
+.say em{font-style:normal;color:var(--gold)}
+.say.xr em{color:var(--xray)}
+#t0{pointer-events:auto}
+#t0 .kick{color:var(--xray)}
+#t0 h1{font-size:clamp(42px,6vw,100px);max-width:1100px;margin-top:16px}
+#t0 h1 em{color:var(--gold);font-style:normal}
+#t0 p.sub{margin:22px 0 0;font-size:clamp(16px,1.5vw,20px);line-height:1.6;color:#E3ECEE;max-width:640px}
+#t0 .ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:30px}
+#t1,#t2,#t3,#t4{opacity:0}
+.chat{display:flex;flex-direction:column;gap:8px;margin-top:26px;align-items:center}
+.msg{background:#fff;color:var(--ink);border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:14px;opacity:0}
+.seen{font-size:12px;font-weight:700;color:#FF9C94;opacity:0}
+.cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:#CFE0E2}
 
-/* método */
-.xray .bg{filter:grayscale(1) contrast(1.1) brightness(.45)}
-.xray .tint{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(94,234,212,.18),rgba(8,12,14,.85) 70%)}
-.method{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 6%;color:#fff}
-.method .kick{color:#7FE0D2}
-.method h2{font-size:clamp(48px,7vw,120px);margin-top:10px}
-.method .sub{margin:14px 0 0;font-size:clamp(17px,1.6vw,22px);color:#D5E4E6;max-width:620px}
-.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:end;margin-top:44px;max-width:1100px}
-.step{border-radius:20px;padding:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
-.step:nth-child(1){min-height:140px}.step:nth-child(2){min-height:180px}.step:nth-child(3){min-height:220px}.step:nth-child(4){min-height:260px;background:var(--v);border-color:var(--v)}
-.step small{display:block;font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#7FE0D2}
+/* ── Panel blanco que sube: el método ── */
+#metodo{position:relative;z-index:2;background:#fff;color:var(--ink);border-radius:36px 36px 0 0;margin-top:-36px;padding:16vh 6% 14vh}
+#metodo .kick{color:var(--mint)}
+#metodo h2{font-size:clamp(48px,7.4vw,124px);margin-top:12px}
+#metodo .lead{margin:16px 0 0;font-size:clamp(18px,1.7vw,24px);color:var(--muted);max-width:640px;line-height:1.5}
+.windows{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:9vh}
+.win{position:relative;height:62vh;min-height:380px;border-radius:28px;overflow:hidden;clip-path:inset(12% 12% 12% 12% round 28px)}
+.win .layer{opacity:1;transform:scale(1.25)}
+.win.paper .layer{filter:grayscale(.85)}
+.win .lab{position:absolute;left:28px;right:28px;bottom:26px;color:#fff;z-index:1}
+.win .lab .display{font-size:clamp(28px,3.2vw,50px)}
+.win .lab b{display:inline-block;margin-top:12px;background:#fff;color:var(--v);font-size:13px;padding:8px 14px;border-radius:999px}
+.win::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(7,9,10,.75),rgba(7,9,10,0) 55%)}
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:end;margin-top:12vh}
+.step{border-radius:22px;padding:22px;background:#F2F7F6;border:1px solid #E1ECEA}
+.step:nth-child(1){min-height:150px}.step:nth-child(2){min-height:195px}.step:nth-child(3){min-height:240px}.step:nth-child(4){min-height:285px;background:var(--v);border-color:var(--v);color:#fff}
+.step small{display:block;font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--mint)}
 .step:nth-child(4) small{color:#F1D2EF}
-.step h3{margin:8px 0 0;font-size:17px;line-height:1.25}
-.step b{display:block;margin-top:10px;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:28px;color:var(--gold)}
-.method .foot{margin:22px 0 0;font-size:15px;color:#D5E4E6}
+.step h3{margin:8px 0 0;font-size:18px;line-height:1.25}
+.step b{display:block;margin-top:10px;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:30px;color:var(--v)}
+.step:nth-child(4) b{color:var(--gold)}
+.foot{margin:26px 0 0;font-size:17px;color:var(--muted)}
 
-/* cierre */
-.cta{background:#fff;padding:16vh 6%;text-align:center}
-.cta .display{font-size:clamp(44px,6vw,96px);max-width:1000px;margin:12px auto 0}
-.cta p{margin:18px auto 0;font-size:18px;color:var(--muted);max-width:520px;line-height:1.6}
-.cta .btn{margin-top:28px;font-size:16px;padding:16px 26px}
-.note{background:#0B0F10;color:#8A979C;text-align:center;font-size:12px;padding:18px}
+/* ── Cierre: la ventana vuelve a la clínica llena ── */
+#cierre{position:relative;height:100vh;height:100svh;overflow:hidden;background:#fff}
+#cierre .frame{position:absolute;inset:0;clip-path:inset(20% 24% 20% 24% round 32px)}
+#cierre .frame .layer{opacity:1}
+#cierre .veil{background:rgba(7,9,10,.45)}
+#cierre .say{opacity:0;pointer-events:auto}
+#cierre .say .display{font-size:clamp(44px,6.6vw,110px)}
+#cierre .say p{margin:18px 0 0;font-size:18px;color:#E3ECEE}
+#cierre .say .btn{margin-top:26px}
+.note{background:#07090A;color:#8A979C;text-align:center;font-size:12px;padding:18px}
 
 @media (max-width:760px){
-  .shade,.shade.r{background:linear-gradient(0deg,rgba(8,12,14,.8) 0%,rgba(8,12,14,.2) 60%,rgba(8,12,14,0) 100%)}
-  .content,.content.end{align-items:flex-end;justify-content:center;padding:0 16px 7vh}
-  .card{padding:24px;border-radius:22px}
-  .split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
-  .half .lab{bottom:3vh}
-  .paper .lab{bottom:auto;top:10vh}
-  .half .lab p{display:none}
-  .split-title{top:auto;bottom:50%;transform:translateY(50%)}
-  .split-title .display{font-size:30px;background:rgba(8,12,14,.6);display:inline-block;padding:8px 12px;border-radius:12px}
-  .steps{grid-template-columns:1fr 1fr}
-  .step{min-height:0!important}
   .brand span{display:none}
+  .windows{grid-template-columns:1fr}
+  .win{height:46vh;min-height:300px}
+  .ladder{grid-template-columns:1fr 1fr}
+  .step{min-height:0!important}
+  #cierre .frame{clip-path:inset(22% 8% 22% 8% round 24px)}
 }
 </style>
 </head>
 <body>
 <header class="top" id="top">
   <a class="brand" href="#"><i></i><span>La Liga de Marketers</span></a>
-  <a class="btn v" href="#cta">Pedir mi radiografía</a>
+  <a class="btn v" href="#cierre">Pedir mi radiografía</a>
 </header>
 
-<!-- 1 · Sala vacía -->
-<section class="scene" id="s1">
-  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1770648327347-10c97916cf16?w=2200&q=80&auto=format)"></div>
-  <div class="shade"></div>
-  <div class="content">
-    <div class="card">
-      <p class="kick">Marketing odontológico · Córdoba</p>
-      <h1 class="display" style="margin-top:12px">Tu sala de espera no debería verse así</h1>
-      <p class="t">Llenamos la agenda de clínicas dentales con pacientes particulares.</p>
-      <a class="btn wa" href="#cta">Escribinos por WhatsApp</a>
-    </div>
+<section id="stage">
+  <div class="cam">
+    <div class="layer on" id="l0" style="background-image:url(https://images.unsplash.com/photo-1777331903190-341a3dd0441b?w=2200&q=80&auto=format)"></div>
+    <div class="layer" id="l1" style="background-image:url(https://images.unsplash.com/photo-1728342057953-94bfad8f0e7e?w=2200&q=80&auto=format)"></div>
+    <div class="layer" id="l2" style="background-image:url(https://images.unsplash.com/photo-1770648327347-10c97916cf16?w=2200&q=80&auto=format)"></div>
+    <div class="layer" id="l3" style="background-image:url(https://images.unsplash.com/photo-1764727291644-5dcb0b1a0375?w=2200&q=80&auto=format)"></div>
+    <div class="layer on xray-layer" id="l4" style="background-image:url(https://images.unsplash.com/photo-1764727291644-5dcb0b1a0375?w=2200&q=80&auto=format)"></div>
+    <div class="xray-tint" id="tint"></div>
   </div>
-  <span class="credit">Foto simulada · Unsplash</span>
-</section>
+  <div class="grid" id="grid"></div>
+  <div class="veil"></div>
+  <div class="scan" id="scan"></div>
 
-<!-- 2 · Sillón vacío -->
-<section class="scene" id="s2">
-  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1728342057953-94bfad8f0e7e?w=2200&q=80&auto=format)"></div>
-  <div class="shade r"></div>
-  <div class="content end">
-    <div class="card">
-      <h2 class="display">Tenés el equipo, la experiencia y el sillón</h2>
-      <p class="t">Lo que falta son pacientes particulares para tus tratamientos de alto valor.</p>
-    </div>
+  <div class="say" id="t0">
+    <p class="kick">Marketing odontológico · Córdoba</p>
+    <h1 class="display">Llenamos la agenda de tu clínica con <em>pacientes particulares</em></h1>
+    <p class="sub">Con el Método Radiografía: primero diagnosticamos tu clínica, después invertimos en publicidad.</p>
+    <div class="ctas"><a class="btn wa" href="#cierre">Pedir mi radiografía sin costo</a><a class="btn ghost" href="#metodo">Ver el método</a></div>
   </div>
-  <span class="credit">Foto simulada · Unsplash</span>
-</section>
-
-<!-- 3 · La frase sobre la imagen -->
-<section class="scene" id="s3">
-  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1704455306251-b4634215d98f?w=2200&q=80&auto=format)"></div>
-  <div class="shade" style="background:linear-gradient(0deg,rgba(8,12,14,.75),rgba(8,12,14,.1) 60%)"></div>
-  <p class="display big-line">Cada hora libre<br>es un <em>tratamiento</em> que no hiciste</p>
-  <span class="credit">Foto simulada · Unsplash</span>
-</section>
-
-<!-- 4 · La agencia -->
-<section class="scene" id="s4">
-  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1764727291644-5dcb0b1a0375?w=2200&q=80&auto=format)"></div>
-  <div class="shade"></div>
-  <div class="content">
-    <div class="card">
-      <h2 class="display">Ya probaste con una agencia</h2>
-      <p class="t">Pagaste publicidad. Llegaron mensajes. La agenda siguió igual.</p>
-      <div class="chat">
-        <span class="msg">Hola, ¿cuánto sale un implante?</span>
-        <span class="msg">¿Atienden por obra social?</span>
-        <span class="seen">Visto · hace 3 días</span>
-      </div>
-    </div>
+  <div class="say" id="t1"><p class="display words">El sillón está listo. Los pacientes particulares <em>no llegan.</em></p></div>
+  <div class="say" id="t2"><p class="display words">Tu sala de espera <em>no debería</em> verse así.</p></div>
+  <div class="say" id="t3">
+    <p class="display words">Probaste con una agencia. <em>Ninguno</em> terminó en turno.</p>
+    <div class="chat"><span class="msg">Hola, ¿cuánto sale un implante?</span><span class="msg">¿Atienden por obra social?</span><span class="seen">Visto · hace 3 días</span></div>
   </div>
-  <span class="credit">Foto simulada · Unsplash</span>
+  <div class="say xr" id="t4"><p class="display words">No falló la publicidad. Faltó la <em>radiografía.</em></p></div>
+  <p class="cue" id="cue">Bajá · la historia empieza</p>
 </section>
 
-<!-- 5 · Papel vs digital -->
-<section class="scene" id="s5">
-  <div class="split">
-    <div class="half paper">
-      <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1435527173128-983b87201f4d?w=1400&q=80&auto=format)"></div>
-      <div class="shade" style="background:linear-gradient(0deg,rgba(8,12,14,.8),rgba(8,12,14,.15) 65%)"></div>
-      <div class="lab"><h3 class="display">Clínica en papel</h3><p>Agenda y fichas en papel, sin seguimiento. Los pacientes nuevos se pierden.</p><b>Empieza por la Fase 1</b></div>
-    </div>
-    <div class="half digital">
-      <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80&auto=format)"></div>
-      <div class="shade" style="background:linear-gradient(0deg,rgba(8,12,14,.8),rgba(8,12,14,.15) 65%)"></div>
-      <div class="lab"><h3 class="display">Clínica digital</h3><p>CRM, agenda online y un equipo listo para convertir consultas.</p><b>Pasa directo a la Fase 2</b></div>
-    </div>
+<section id="metodo">
+  <p class="kick">Nuestro método</p>
+  <h2 class="display">Método Radiografía</h2>
+  <p class="lead">Ningún odontólogo trata sin radiografía. Nosotros tampoco: no todas las clínicas están en la misma etapa.</p>
+  <div class="windows">
+    <div class="win paper"><div class="layer" style="background-image:url(https://images.unsplash.com/photo-1435527173128-983b87201f4d?w=1400&q=80&auto=format)"></div><div class="lab"><h3 class="display">Clínica en papel</h3><b>Empieza por la Fase 1</b></div></div>
+    <div class="win digital"><div class="layer" style="background-image:url(https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80&auto=format)"></div><div class="lab"><h3 class="display">Clínica digital</h3><b>Pasa directo a la Fase 2</b></div></div>
   </div>
-  <div class="split-title"><h2 class="display">No falló la publicidad.<br>Faltó el diagnóstico.</h2></div>
+  <div class="ladder">
+    <div class="step"><small>Radiografía</small><h3>Evaluación inicial</h3><b>Sin costo</b></div>
+    <div class="step"><small>Fase 1</small><h3>Diagnóstico y asesoría</h3><b>$</b></div>
+    <div class="step"><small>Fase 2</small><h3>Sistema de captación</h3><b>$$</b></div>
+    <div class="step"><small>Fase 3</small><h3>Redes y community</h3><b>$$$</b></div>
+  </div>
+  <p class="foot">De lo más barato a lo más caro, para que tu clínica no se desangre en el camino.</p>
 </section>
 
-<!-- 6 · Método Radiografía -->
-<section class="scene xray" id="s6">
-  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1777444969135-caf869407707?w=2200&q=80&auto=format)"></div>
-  <div class="tint"></div>
-  <div class="method">
-    <p class="kick">Nuestro método</p>
-    <h2 class="display">Método Radiografía</h2>
-    <p class="sub">Ningún odontólogo trata sin radiografía. Nosotros tampoco.</p>
-    <div class="steps">
-      <div class="step"><small>Radiografía</small><h3>Evaluación inicial</h3><b>Sin costo</b></div>
-      <div class="step"><small>Fase 1</small><h3>Diagnóstico y asesoría</h3><b>$</b></div>
-      <div class="step"><small>Fase 2</small><h3>Sistema de captación</h3><b>$$</b></div>
-      <div class="step"><small>Fase 3</small><h3>Redes y community</h3><b>$$$</b></div>
-    </div>
-    <p class="foot">De lo más barato a lo más caro, para que tu clínica no se desangre en el camino.</p>
+<section id="cierre">
+  <div class="frame" id="frame"><div class="layer" style="background-image:url(https://images.unsplash.com/photo-1777331903190-341a3dd0441b?w=2200&q=80&auto=format)"></div><div class="veil"></div></div>
+  <div class="say">
+    <h2 class="display">Empecemos por tu radiografía</h2>
+    <p>30 minutos, sin costo. Te decimos en qué fase está tu clínica.</p>
+    <a class="btn wa" href="#">Escribinos por WhatsApp</a>
   </div>
 </section>
-
-<!-- 7 · Después -->
-<section class="scene" id="s7">
-  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1777331903190-341a3dd0441b?w=2200&q=80&auto=format)"></div>
-  <div class="shade r"></div>
-  <div class="content end">
-    <div class="card">
-      <p class="kick">Caso real</p>
-      <h2 class="display" style="margin-top:12px">La misma clínica, con agenda llena</h2>
-      <p class="t">[Resultado real del cliente]</p>
-    </div>
-  </div>
-  <span class="credit">Foto simulada · Unsplash</span>
-</section>
-
-<section class="cta" id="cta">
-  <p class="kick">Método Radiografía</p>
-  <h2 class="display">Empecemos por tu radiografía</h2>
-  <p>30 minutos, sin costo. Te decimos en qué fase está tu clínica.</p>
-  <a class="btn wa" href="#">Escribinos por WhatsApp</a>
-</section>
-<p class="note">Mockup interno · las fotos son simuladas (Unsplash) y se reemplazan por fotos reales.</p>
+<p class="note">Mockup interno · fotos simuladas (Unsplash), se reemplazan por fotos reales.</p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 gsap.registerPlugin(ScrollTrigger);
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (!reduce) {
-  const lenis = new Lenis({ lerp: 0.09 });
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add(t => lenis.raf(t * 1000));
-  gsap.ticker.lagSmoothing(0);
+// cada palabra en su span, para encenderlas de a una como en la referencia
+document.querySelectorAll('.words').forEach(p => {
+  p.querySelectorAll('em').forEach(em => em.innerHTML = em.textContent.split(' ').map(w => `<span class="w">${w}</span>`).join(' '));
+  [...p.childNodes].forEach(n => {
+    if (n.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      n.textContent.split(/\s+/).filter(Boolean).forEach(w => { const s = document.createElement('span'); s.className = 'w'; s.textContent = w; frag.append(s, ' '); });
+      n.replaceWith(frag);
+    }
+  });
+});
 
-  // cada escena queda fija mientras la foto se acerca y el texto entra
-  const pinScene = (id, build, len = '+=100%') => {
-    const tl = gsap.timeline({ scrollTrigger: { trigger: id, start: 'top top', end: len, pin: true, scrub: 0.6 } });
-    tl.fromTo(`${id} .bg`, { scale: 1.18 }, { scale: 1, ease: 'none', duration: 1 }, 0);
-    build(tl);
-  };
+const lenis = new Lenis({ lerp: 0.08 });
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add(t => lenis.raf(t * 1000));
+gsap.ticker.lagSmoothing(0);
 
-  gsap.from('#s1 .card > *', { y: 40, opacity: 0, stagger: 0.1, duration: 1, ease: 'expo.out', delay: 0.2 });
-  pinScene('#s1', tl => tl.to('#s1 .card', { y: -80, opacity: 0, duration: 0.4 }, 0.6));
-  pinScene('#s2', tl => tl.from('#s2 .card', { x: 140, opacity: 0, duration: 0.4 }, 0.1));
-  pinScene('#s3', tl => tl.from('#s3 .big-line', { y: 120, opacity: 0, duration: 0.5 }, 0.1));
-  pinScene('#s4', tl => tl
-    .from('#s4 .card', { x: -140, opacity: 0, duration: 0.3 }, 0.05)
-    .from('#s4 .chat > *', { y: 20, opacity: 0, stagger: 0.15, duration: 0.2 }, 0.35), '+=130%');
+gsap.from('#t0 > *', { y: 40, opacity: 0, stagger: 0.1, duration: 1.1, ease: 'expo.out', delay: 0.2 });
 
-  // papel vs digital: las dos mitades entran desde los costados
-  const t5 = gsap.timeline({ scrollTrigger: { trigger: '#s5', start: 'top top', end: '+=130%', pin: true, scrub: 0.6 } });
-  t5.from('#s5 .paper', { xPercent: -100, duration: 0.5 }, 0)
-    .from('#s5 .digital', { xPercent: 100, duration: 0.5 }, 0)
-    .from('#s5 .split-title', { scale: 0.7, opacity: 0, duration: 0.3 }, 0.5)
-    .from('#s5 .lab', { y: 40, opacity: 0, stagger: 0.1, duration: 0.3 }, 0.7);
+// ── Una sola toma: la cámara avanza sin cortes y cada foto nace de la anterior ──
+const words = id => `${id} .w`;
+const tl = gsap.timeline({ scrollTrigger: { trigger: '#stage', start: 'top top', end: '+=850%', pin: true, scrub: 0.8 } });
+tl.to('.cam', { scale: 1.32, ease: 'none', duration: 9 }, 0)
+  // 0 · propuesta de valor → la clínica llena se apaga
+  .to('#t0, #cue', { y: -70, opacity: 0, duration: 0.6 }, 0.3)
+  .to('#l0', { filter: 'grayscale(1) brightness(.75)', duration: 0.8 }, 0.4)
+  // 1 · el paciente desaparece: queda el sillón vacío
+  .to('#l1', { opacity: 1, duration: 0.7 }, 1.0)
+  .set('#t1', { opacity: 1 }, 1.4)
+  .to(words('#t1'), { opacity: 1, stagger: 0.08, duration: 0.15 }, 1.4)
+  .to('#t1', { opacity: 0, y: -50, duration: 0.4 }, 2.6)
+  // 2 · del sillón a la sala de espera
+  .to('#l2', { opacity: 1, duration: 0.7 }, 2.8)
+  .set('#t2', { opacity: 1 }, 3.2)
+  .to(words('#t2'), { opacity: 1, stagger: 0.08, duration: 0.15 }, 3.2)
+  .to('#t2', { opacity: 0, y: -50, duration: 0.4 }, 4.2)
+  // 3 · de la sala a la recepción: los mensajes quedan en visto
+  .to('#l3', { opacity: 1, duration: 0.7 }, 4.4)
+  .set('#t3', { opacity: 1 }, 4.8)
+  .to(words('#t3'), { opacity: 1, stagger: 0.08, duration: 0.15 }, 4.8)
+  .to('#t3 .msg, #t3 .seen', { opacity: 1, y: 0, stagger: 0.25, duration: 0.2 }, 5.5)
+  .to('#t3', { opacity: 0, y: -50, duration: 0.4 }, 6.4)
+  // 4 · la misma recepción pasa por rayos X: el escaneo la revela por dentro
+  .to('#scan', { opacity: 1, duration: 0.1 }, 6.6)
+  .fromTo('#scan', { top: '0%' }, { top: '100%', ease: 'none', duration: 1 }, 6.6)
+  .to('#l4, #tint', { clipPath: 'inset(0 0 0% 0)', ease: 'none', duration: 1 }, 6.6)
+  .to('#grid', { opacity: 1, duration: 0.6 }, 7.0)
+  .to('#scan', { opacity: 0, duration: 0.1 }, 7.6)
+  .set('#t4', { opacity: 1 }, 7.6)
+  .to(words('#t4'), { opacity: 1, stagger: 0.08, duration: 0.15 }, 7.6)
+  .to({}, { duration: 0.6 }, 8.4);
 
-  // método: la placa se "revela" y la escalera sube de lo barato a lo caro
-  const t6 = gsap.timeline({ scrollTrigger: { trigger: '#s6', start: 'top top', end: '+=150%', pin: true, scrub: 0.6 } });
-  t6.fromTo('#s6 .bg', { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 0.6 }, 0)
-    .from('#s6 .method > .kick, #s6 h2, #s6 .sub', { y: 50, opacity: 0, stagger: 0.08, duration: 0.3 }, 0.1)
-    .from('#s6 .step', { y: 80, opacity: 0, stagger: 0.12, duration: 0.3 }, 0.45)
-    .from('#s6 .foot', { opacity: 0, duration: 0.2 }, 0.95);
+// ── El método: las ventanas se abren y la escalera sube de lo barato a lo caro ──
+gsap.from('#metodo > .kick, #metodo h2, #metodo .lead', { y: 60, opacity: 0, stagger: 0.1, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '#metodo', start: 'top 70%' } });
+gsap.utils.toArray('.win').forEach(w => {
+  gsap.timeline({ scrollTrigger: { trigger: w, start: 'top 90%', end: 'center 50%', scrub: 0.8 } })
+    .to(w, { clipPath: 'inset(0% 0% 0% 0% round 28px)', ease: 'none' }, 0)
+    .to(w.querySelector('.layer'), { scale: 1, ease: 'none' }, 0);
+});
+gsap.from('.step', { y: 120, opacity: 0, stagger: 0.12, ease: 'none', scrollTrigger: { trigger: '.ladder', start: 'top 90%', end: 'top 45%', scrub: 0.8 } });
 
-  pinScene('#s7', tl => tl.from('#s7 .card', { x: 140, opacity: 0, duration: 0.4 }, 0.1));
-  gsap.from('.cta > *', { y: 40, opacity: 0, stagger: 0.1, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.cta', start: 'top 75%' } });
+// ── Cierre: la ventana se agranda hasta volver a la clínica llena del principio ──
+gsap.timeline({ scrollTrigger: { trigger: '#cierre', start: 'top top', end: '+=120%', pin: true, scrub: 0.8 } })
+  .to('#frame', { clipPath: 'inset(0% 0% 0% 0% round 0px)', ease: 'none', duration: 1 }, 0)
+  .to('#cierre .say', { opacity: 1, duration: 0.4 }, 0.7);
 
-  // la barra se vuelve blanca al llegar al cierre
-  ScrollTrigger.create({ trigger: '.cta', start: 'top 60px', onToggle: s => document.getElementById('top').classList.toggle('solid', s.isActive || s.progress === 1) });
-}
+ScrollTrigger.create({ trigger: '#metodo', start: 'top 60px', end: 'bottom 60px', toggleClass: { targets: '#top', className: 'solid' } });
 </script>
 </body>
 </html>
