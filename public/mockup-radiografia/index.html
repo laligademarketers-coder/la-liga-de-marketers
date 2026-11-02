@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Mockup · Método Radiografía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101418;--muted:#4A565C;--mint:#0E6E66;--mint-bg:#E8F6F3;--v:#723796;--v2:#9B4FC4;--gold:#FDCD21;--wa:#25D366}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0B0F10;color:var(--ink);font-family:Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.display{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:1.03;margin:0}
+.kick{margin:0;font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--mint)}
+
+/* barra */
+.top{position:fixed;inset:0 0 auto;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 4% 28px;color:#fff;background:linear-gradient(180deg,rgba(8,12,14,.55),rgba(8,12,14,0));transition:background .4s,color .4s}
+.top.solid{background:rgba(255,255,255,.94);color:var(--ink);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.brand i{width:26px;height:26px;border-radius:50%;border:5px solid var(--v2)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14px;padding:13px 20px;border-radius:999px}
+.btn.wa{background:var(--wa);color:#062B14}
+.btn.v{background:var(--v);color:#fff}
+
+/* escenas a todo el ancho */
+.scene{position:relative;height:100vh;height:100svh;overflow:hidden}
+.bg{position:absolute;inset:-6% 0;background-size:cover;background-position:center;will-change:transform}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,12,14,.72) 0%,rgba(8,12,14,.25) 55%,rgba(8,12,14,0) 100%)}
+.shade.r{background:linear-gradient(270deg,rgba(8,12,14,.72) 0%,rgba(8,12,14,.25) 55%,rgba(8,12,14,0) 100%)}
+.content{position:relative;height:100%;display:flex;align-items:center;padding:0 6%}
+.content.end{justify-content:flex-end}
+.card{background:#fff;border-radius:28px;padding:clamp(26px,3.4vw,44px);max-width:540px;box-shadow:0 40px 100px rgba(0,0,0,.35)}
+.card p.t{margin:16px 0 0;font-size:clamp(15px,1.3vw,18px);line-height:1.6;color:var(--muted)}
+.card .display{font-size:clamp(38px,4.6vw,68px)}
+.card .btn{margin-top:24px}
+.big-line{position:absolute;left:6%;right:6%;bottom:9vh;color:#fff;font-size:clamp(34px,5.6vw,92px);text-shadow:0 10px 40px rgba(0,0,0,.4)}
+.big-line em{font-style:normal;color:var(--gold)}
+.credit{position:absolute;right:14px;bottom:10px;font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.04em}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.msg{align-self:flex-start;background:#F1F3F4;border-radius:16px 16px 16px 4px;padding:11px 14px;font-size:14px;max-width:300px}
+.seen{font-size:11px;font-weight:700;color:#B4413A;letter-spacing:.04em}
+
+/* papel vs digital */
+.split{display:grid;grid-template-columns:1fr 1fr;height:100%}
+.half{position:relative;overflow:hidden}
+.half .bg{inset:0}
+.half .lab{position:absolute;left:8%;right:8%;bottom:10vh;color:#fff}
+.half .lab .display{font-size:clamp(30px,3.6vw,56px)}
+.half .lab p{margin:10px 0 0;font-size:15px;line-height:1.55;max-width:380px;color:#E9EEF0}
+.half .lab b{display:inline-block;margin-top:14px;background:#fff;color:var(--v);font-size:13px;padding:8px 14px;border-radius:999px}
+.paper .bg{filter:grayscale(.85) contrast(.95)}
+.split-title{position:absolute;top:13vh;left:0;right:0;text-align:center;color:#fff;z-index:2;padding:0 6%}
+.split-title .display{font-size:clamp(34px,4.8vw,76px);text-shadow:0 10px 40px rgba(0,0,0,.5)}
+
+/* método */
+.xray .bg{filter:grayscale(1) contrast(1.1) brightness(.45)}
+.xray .tint{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(94,234,212,.18),rgba(8,12,14,.85) 70%)}
+.method{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 6%;color:#fff}
+.method .kick{color:#7FE0D2}
+.method h2{font-size:clamp(48px,7vw,120px);margin-top:10px}
+.method .sub{margin:14px 0 0;font-size:clamp(17px,1.6vw,22px);color:#D5E4E6;max-width:620px}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:end;margin-top:44px;max-width:1100px}
+.step{border-radius:20px;padding:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+.step:nth-child(1){min-height:140px}.step:nth-child(2){min-height:180px}.step:nth-child(3){min-height:220px}.step:nth-child(4){min-height:260px;background:var(--v);border-color:var(--v)}
+.step small{display:block;font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#7FE0D2}
+.step:nth-child(4) small{color:#F1D2EF}
+.step h3{margin:8px 0 0;font-size:17px;line-height:1.25}
+.step b{display:block;margin-top:10px;font-family:Anton,Impact,sans-serif;font-weight:400;font-size:28px;color:var(--gold)}
+.method .foot{margin:22px 0 0;font-size:15px;color:#D5E4E6}
+
+/* cierre */
+.cta{background:#fff;padding:16vh 6%;text-align:center}
+.cta .display{font-size:clamp(44px,6vw,96px);max-width:1000px;margin:12px auto 0}
+.cta p{margin:18px auto 0;font-size:18px;color:var(--muted);max-width:520px;line-height:1.6}
+.cta .btn{margin-top:28px;font-size:16px;padding:16px 26px}
+.note{background:#0B0F10;color:#8A979C;text-align:center;font-size:12px;padding:18px}
+
+@media (max-width:760px){
+  .shade,.shade.r{background:linear-gradient(0deg,rgba(8,12,14,.8) 0%,rgba(8,12,14,.2) 60%,rgba(8,12,14,0) 100%)}
+  .content,.content.end{align-items:flex-end;justify-content:center;padding:0 16px 7vh}
+  .card{padding:24px;border-radius:22px}
+  .split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+  .half .lab{bottom:3vh}
+  .paper .lab{bottom:auto;top:10vh}
+  .half .lab p{display:none}
+  .split-title{top:auto;bottom:50%;transform:translateY(50%)}
+  .split-title .display{font-size:30px;background:rgba(8,12,14,.6);display:inline-block;padding:8px 12px;border-radius:12px}
+  .steps{grid-template-columns:1fr 1fr}
+  .step{min-height:0!important}
+  .brand span{display:none}
+}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <a class="brand" href="#"><i></i><span>La Liga de Marketers</span></a>
+  <a class="btn v" href="#cta">Pedir mi radiografía</a>
+</header>
+
+<!-- 1 · Sala vacía -->
+<section class="scene" id="s1">
+  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1770648327347-10c97916cf16?w=2200&q=80&auto=format)"></div>
+  <div class="shade"></div>
+  <div class="content">
+    <div class="card">
+      <p class="kick">Marketing odontológico · Córdoba</p>
+      <h1 class="display" style="margin-top:12px">Tu sala de espera no debería verse así</h1>
+      <p class="t">Llenamos la agenda de clínicas dentales con pacientes particulares.</p>
+      <a class="btn wa" href="#cta">Escribinos por WhatsApp</a>
+    </div>
+  </div>
+  <span class="credit">Foto simulada · Unsplash</span>
+</section>
+
+<!-- 2 · Sillón vacío -->
+<section class="scene" id="s2">
+  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1728342057953-94bfad8f0e7e?w=2200&q=80&auto=format)"></div>
+  <div class="shade r"></div>
+  <div class="content end">
+    <div class="card">
+      <h2 class="display">Tenés el equipo, la experiencia y el sillón</h2>
+      <p class="t">Lo que falta son pacientes particulares para tus tratamientos de alto valor.</p>
+    </div>
+  </div>
+  <span class="credit">Foto simulada · Unsplash</span>
+</section>
+
+<!-- 3 · La frase sobre la imagen -->
+<section class="scene" id="s3">
+  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1704455306251-b4634215d98f?w=2200&q=80&auto=format)"></div>
+  <div class="shade" style="background:linear-gradient(0deg,rgba(8,12,14,.75),rgba(8,12,14,.1) 60%)"></div>
+  <p class="display big-line">Cada hora libre<br>es un <em>tratamiento</em> que no hiciste</p>
+  <span class="credit">Foto simulada · Unsplash</span>
+</section>
+
+<!-- 4 · La agencia -->
+<section class="scene" id="s4">
+  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1764727291644-5dcb0b1a0375?w=2200&q=80&auto=format)"></div>
+  <div class="shade"></div>
+  <div class="content">
+    <div class="card">
+      <h2 class="display">Ya probaste con una agencia</h2>
+      <p class="t">Pagaste publicidad. Llegaron mensajes. La agenda siguió igual.</p>
+      <div class="chat">
+        <span class="msg">Hola, ¿cuánto sale un implante?</span>
+        <span class="msg">¿Atienden por obra social?</span>
+        <span class="seen">Visto · hace 3 días</span>
+      </div>
+    </div>
+  </div>
+  <span class="credit">Foto simulada · Unsplash</span>
+</section>
+
+<!-- 5 · Papel vs digital -->
+<section class="scene" id="s5">
+  <div class="split">
+    <div class="half paper">
+      <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1435527173128-983b87201f4d?w=1400&q=80&auto=format)"></div>
+      <div class="shade" style="background:linear-gradient(0deg,rgba(8,12,14,.8),rgba(8,12,14,.15) 65%)"></div>
+      <div class="lab"><h3 class="display">Clínica en papel</h3><p>Agenda y fichas en papel, sin seguimiento. Los pacientes nuevos se pierden.</p><b>Empieza por la Fase 1</b></div>
+    </div>
+    <div class="half digital">
+      <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=80&auto=format)"></div>
+      <div class="shade" style="background:linear-gradient(0deg,rgba(8,12,14,.8),rgba(8,12,14,.15) 65%)"></div>
+      <div class="lab"><h3 class="display">Clínica digital</h3><p>CRM, agenda online y un equipo listo para convertir consultas.</p><b>Pasa directo a la Fase 2</b></div>
+    </div>
+  </div>
+  <div class="split-title"><h2 class="display">No falló la publicidad.<br>Faltó el diagnóstico.</h2></div>
+</section>
+
+<!-- 6 · Método Radiografía -->
+<section class="scene xray" id="s6">
+  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1777444969135-caf869407707?w=2200&q=80&auto=format)"></div>
+  <div class="tint"></div>
+  <div class="method">
+    <p class="kick">Nuestro método</p>
+    <h2 class="display">Método Radiografía</h2>
+    <p class="sub">Ningún odontólogo trata sin radiografía. Nosotros tampoco.</p>
+    <div class="steps">
+      <div class="step"><small>Radiografía</small><h3>Evaluación inicial</h3><b>Sin costo</b></div>
+      <div class="step"><small>Fase 1</small><h3>Diagnóstico y asesoría</h3><b>$</b></div>
+      <div class="step"><small>Fase 2</small><h3>Sistema de captación</h3><b>$$</b></div>
+      <div class="step"><small>Fase 3</small><h3>Redes y community</h3><b>$$$</b></div>
+    </div>
+    <p class="foot">De lo más barato a lo más caro, para que tu clínica no se desangre en el camino.</p>
+  </div>
+</section>
+
+<!-- 7 · Después -->
+<section class="scene" id="s7">
+  <div class="bg" style="background-image:url(https://images.unsplash.com/photo-1777331903190-341a3dd0441b?w=2200&q=80&auto=format)"></div>
+  <div class="shade r"></div>
+  <div class="content end">
+    <div class="card">
+      <p class="kick">Caso real</p>
+      <h2 class="display" style="margin-top:12px">La misma clínica, con agenda llena</h2>
+      <p class="t">[Resultado real del cliente]</p>
+    </div>
+  </div>
+  <span class="credit">Foto simulada · Unsplash</span>
+</section>
+
+<section class="cta" id="cta">
+  <p class="kick">Método Radiografía</p>
+  <h2 class="display">Empecemos por tu radiografía</h2>
+  <p>30 minutos, sin costo. Te decimos en qué fase está tu clínica.</p>
+  <a class="btn wa" href="#">Escribinos por WhatsApp</a>
+</section>
+<p class="note">Mockup interno · las fotos son simuladas (Unsplash) y se reemplazan por fotos reales.</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!reduce) {
+  const lenis = new Lenis({ lerp: 0.09 });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  // cada escena queda fija mientras la foto se acerca y el texto entra
+  const pinScene = (id, build, len = '+=100%') => {
+    const tl = gsap.timeline({ scrollTrigger: { trigger: id, start: 'top top', end: len, pin: true, scrub: 0.6 } });
+    tl.fromTo(`${id} .bg`, { scale: 1.18 }, { scale: 1, ease: 'none', duration: 1 }, 0);
+    build(tl);
+  };
+
+  gsap.from('#s1 .card > *', { y: 40, opacity: 0, stagger: 0.1, duration: 1, ease: 'expo.out', delay: 0.2 });
+  pinScene('#s1', tl => tl.to('#s1 .card', { y: -80, opacity: 0, duration: 0.4 }, 0.6));
+  pinScene('#s2', tl => tl.from('#s2 .card', { x: 140, opacity: 0, duration: 0.4 }, 0.1));
+  pinScene('#s3', tl => tl.from('#s3 .big-line', { y: 120, opacity: 0, duration: 0.5 }, 0.1));
+  pinScene('#s4', tl => tl
+    .from('#s4 .card', { x: -140, opacity: 0, duration: 0.3 }, 0.05)
+    .from('#s4 .chat > *', { y: 20, opacity: 0, stagger: 0.15, duration: 0.2 }, 0.35), '+=130%');
+
+  // papel vs digital: las dos mitades entran desde los costados
+  const t5 = gsap.timeline({ scrollTrigger: { trigger: '#s5', start: 'top top', end: '+=130%', pin: true, scrub: 0.6 } });
+  t5.from('#s5 .paper', { xPercent: -100, duration: 0.5 }, 0)
+    .from('#s5 .digital', { xPercent: 100, duration: 0.5 }, 0)
+    .from('#s5 .split-title', { scale: 0.7, opacity: 0, duration: 0.3 }, 0.5)
+    .from('#s5 .lab', { y: 40, opacity: 0, stagger: 0.1, duration: 0.3 }, 0.7);
+
+  // método: la placa se "revela" y la escalera sube de lo barato a lo caro
+  const t6 = gsap.timeline({ scrollTrigger: { trigger: '#s6', start: 'top top', end: '+=150%', pin: true, scrub: 0.6 } });
+  t6.fromTo('#s6 .bg', { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 0.6 }, 0)
+    .from('#s6 .method > .kick, #s6 h2, #s6 .sub', { y: 50, opacity: 0, stagger: 0.08, duration: 0.3 }, 0.1)
+    .from('#s6 .step', { y: 80, opacity: 0, stagger: 0.12, duration: 0.3 }, 0.45)
+    .from('#s6 .foot', { opacity: 0, duration: 0.2 }, 0.95);
+
+  pinScene('#s7', tl => tl.from('#s7 .card', { x: 140, opacity: 0, duration: 0.4 }, 0.1));
+  gsap.from('.cta > *', { y: 40, opacity: 0, stagger: 0.1, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.cta', start: 'top 75%' } });
+
+  // la barra se vuelve blanca al llegar al cierre
+  ScrollTrigger.create({ trigger: '.cta', start: 'top 60px', onToggle: s => document.getElementById('top').classList.toggle('solid', s.isActive || s.progress === 1) });
+}
+</script>
+</body>
+</html>
